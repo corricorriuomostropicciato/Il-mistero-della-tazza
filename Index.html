@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Halloween – La tazza scomparsa 🎃</title>
+    <style>
+        :root {
+            --bg-color: #0d0b12;
+            --panel-bg: #161320;
+            --border-color: #ff6600;
+            --text-color: #f0f0f0;
+            --accent-orange: #ff6600;
+            --accent-purple: #9b59b6;
+            --btn-bg: #221c30;
+            --btn-hover: #ff6600;
+            --btn-text-hover: #0d0b12;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        #game-container {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--panel-bg);
+            border: 3px solid var(--border-color);
+            box-shadow: 0 0 25px rgba(255, 102, 0, 0.3);
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        header {
+            background: linear-gradient(90deg, #1f162c, #2a1b3d);
+            border-bottom: 2px solid var(--border-color);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .game-title {
+            font-size: 1.1rem;
+            color: var(--accent-orange);
+            font-weight: bold;
+            text-shadow: 2px 2px #000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            background: #111;
+            border: 1px solid var(--accent-orange);
+            color: var(--accent-orange);
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: var(--accent-orange);
+            color: #111;
+        }
+
+        #main-content {
+            padding: 20px;
+            min-height: 380px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .screen {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1.splash-title {
+            font-size: 2.2rem;
+            color: var(--accent-orange);
+            text-align: center;
+            margin-top: 15px;
+            text-shadow: 3px 3px var(--accent-purple);
+        }
+
+        .splash-subtitle {
+            text-align: center;
+            color: #b19cd9;
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+
+        .splash-art {
+            text-align: center;
+            font-size: 3.5rem;
+            margin: 10px 0;
+            letter-spacing: 10px;
+        }
+
+        .story-box {
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 4px solid var(--accent-orange);
+            padding: 15px;
+            border-radius: 0 4px 4px 0;
+            line-height: 1.6;
+            font-size: 1.05rem;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .story-box p {
+            margin-bottom: 10px;
+        }
+
+        .story-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .dog-bubble {
+            background: rgba(155, 89, 182, 0.15);
+            border: 1px dashed var(--accent-purple);
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-style: italic;
+            color: #dcd0ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .choices-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .choice-btn {
+            background-color: var(--btn-bg);
+            border: 1px solid #443c59;
+            color: var(--text-color);
+            padding: 12px 15px;
+            text-align: left;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .choice-btn:hover {
+            background-color: var(--btn-hover);
+            color: var(--btn-text-hover);
+            border-color: var(--accent-orange);
+            transform: translateX(4px);
+            font-weight: bold;
+        }
+
+        .choice-key {
+            background: rgba(0,0,0,0.3);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            border: 1px solid currentColor;
+        }
+
+        .sidebar-panel {
+            background: #110e17;
+            border-top: 2px dashed #33294a;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            display: none;
+        }
+
+        .modal-content {
+            background: var(--panel-bg);
+            border: 2px solid var(--accent-purple);
+            width: 90%;
+            max-width: 450px;
+            padding: 20px;
+            border-radius: 6px;
+            box-shadow: 0 0 15px rgba(155, 89, 182, 0.4);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #33294a;
+            padding-bottom: 8px;
+            color: var(--accent-purple);
+            font-weight: bold;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .modal-body ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .modal-body li {
+            padding: 8px 0;
+            border-bottom: 1px dotted #2a213d;
+            font-size: 0.9rem;
+        }
+
+        footer.game-footer {
+            text-align: center;
+            padding: 8px;
+            font-size: 0.75rem;
+            color: #666;
+            background: #09070c;
+            border-top: 1px solid #1a1523;
+        }
+
+        .ending-box {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .ending-box h2 {
+            color: var(--accent-orange);
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        @media(max-width: 600px) {
+            body { padding: 5px; }
+            #game-container { border-width: 1px; }
+            h1.splash-title { font-size: 1.6rem; }
+            .story-box { font-size: 0.95rem; max-height: 190px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <header>
+            <div class="game-title">
+                <span>🎃</span> Halloween – La tazza scomparsa
+            </div>
+            <div class="header-controls">
+                <button class="icon-btn" id="btn-inv" onclick="openModal('modal-inventory')">Inventario (<span id="inv-count">0</span>)</button>
+                <button class="icon-btn" id="btn-clues" onclick="openModal('modal-clues')">Indizi (<span id="clue-count">0</span>)</button>
+                <button class="icon-btn" id="btn-audio" onclick="toggleAudio()">Audio: ON</button>
+            </div>
+        </header>
+
+        <div id="main-content">
+            <!-- Il contenuto dinamico del gioco viene iniettato qui -->
+        </div>
+
+        <div class="sidebar-panel">
+            <div>Luogo: <span id="current-location" style="color:var(--accent-orange);">Schermata Iniziale</span></div>
+            <div>🐶 Il cane biondo ti segue fedelmente</div>
+        </div>
+
+        <footer class="game-footer">
+            Progetto PLAYIT &bull; Avventura Grafica Retrò 2000 &bull; 100% Unico File HTML
+        </footer>
+    </div>
+
+    <!-- Modale Inventario -->
+    <div id="modal-inventory" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>🎒 Inventario</span>
+                <button class="close-modal" onclick="closeModal('modal-inventory')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <ul id="inventory-list">
+                    <li>La borsa è vuota.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale Indizi -->
+    <div id="modal-clues" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>🔍 Indizi Raccolti</span>
+                <button class="close-modal" onclick="closeModal('modal-clues')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <ul id="clues-list-modal">
+                    <li>Nessun indizio scoperto finora.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- MOTORE AUDIO WEB AUDIO API (Con timing sequenziale reale per loop di ~16-18 secondi) ---
+        let audioCtx = null;
+        let isAudioOn = true;
+        let musicTimeout = null;
+        let noteIndex = 0;
+
+        const melodyPattern = [
+            { f: 220,    dur: 350, wait: 900,  type: 'triangle' },
+            { f: 261.63, dur: 300, wait: 600,  type: 'sine' },
+            { f: 311.13, dur: 400, wait: 1400, type: 'triangle' },
+            { f: 220,    dur: 350, wait: 900,  type: 'triangle' },
+            { f: 110,    dur: 800, wait: 1200, type: 'sine' },
+            { f: 659.25, dur: 150, wait: 2000, type: 'sine' },
+            { f: 0,      dur: 100, wait: 2500, type: 'sine' }
+        ];
+
+        function initAudioContext() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playNote(freq, duration, type) {
+            if (!isAudioOn || !audioCtx || freq === 0) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.type = type || 'sine';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+                gain.gain.setValueAtTime(0, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.08, audioCtx.currentTime + 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + (duration / 1000));
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + (duration / 1000));
+            } catch (e) {
+                console.log("Audio play error:", e);
+            }
+        }
+
+        function scheduleNextNote() {
+            if (!isAudioOn) return;
+            
+            const item = melodyPattern[noteIndex];
+            if (item.f > 0) {
+                playNote(item.f, item.dur, item.type);
+            }
+            
+            noteIndex = (noteIndex + 1) % melodyPattern.length;
+            
+            musicTimeout = setTimeout(scheduleNextNote, item.wait);
+        }
+
+        function startBackgroundMusic() {
+            if (musicTimeout) return;
+            initAudioContext();
+            noteIndex = 0;
+            scheduleNextNote();
+        }
+
+        function stopBackgroundMusic() {
+            if (musicTimeout) {
+                clearTimeout(musicTimeout);
+                musicTimeout = null;
+            }
+            noteIndex = 0;
+        }
+
+        function toggleAudio() {
+            isAudioOn = !isAudioOn;
+            const btn = document.getElementById('btn-audio');
+            if (isAudioOn) {
+                btn.textContent = "Audio: ON";
+                startBackgroundMusic();
+            } else {
+                btn.textContent = "Audio: OFF";
+                stopBackgroundMusic();
+            }
+        }
+
+        // --- STATO DEL GIOCO ---
+        let gameState = {
+            inventory: [],
+            clues: [],
+            flags: {
+                sawPhoto: false,
+                checkedToothbrush: false,
+                calledOldMan: false,
+                foundBox: false,
+                visitedHospital: false,
+                visitedLunaPark: false,
+                cupBroken: false,
+                dogSuspected: false
+            }
+        };
+
+        function addItem(item) {
+            if (!gameState.inventory.includes(item)) {
+                gameState.inventory.push(item);
+                updateCounters();
+            }
+        }
+
+        function addClue(clue) {
+            if (!gameState.clues.includes(clue)) {
+                gameState.clues.push(clue);
+                updateCounters();
+            }
+        }
+
+        function updateCounters() {
+            document.getElementById('inv-count').textContent = gameState.inventory.length;
+            document.getElementById('clue-count').textContent = gameState.clues.length;
+            
+            const invList = document.getElementById('inventory-list');
+            if (gameState.inventory.length === 0) {
+                invList.innerHTML = '<li>La borsa è vuota.</li>';
+            } else {
+                invList.innerHTML = gameState.inventory.map(i => `<li>🎒 ${i}</li>`).join('');
+            }
+
+            const cluesListModal = document.getElementById('clues-list-modal');
+            if (gameState.clues.length === 0) {
+                cluesListModal.innerHTML = '<li>Nessun indizio scoperto finora.</li>';
+            } else {
+                cluesListModal.innerHTML = gameState.clues.map(c => `<li>🔍 ${c}</li>`).join('');
+            }
+        }
+
+        function setLocation(locName) {
+            document.getElementById('current-location').textContent = locName;
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // --- SCHERMATA INIZIALE ---
+        function renderSplash() {
+            setLocation("Schermata Iniziale");
+            stopBackgroundMusic();
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="splash-art">🎃 ☕ 🐕</div>
+                    <h1 class="splash-title">Halloween<br>La tazza scomparsa</h1>
+                    <div class="splash-subtitle">Un'avventura narrativa tra Veneto, misteri e Golden Retriever</div>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="choice-btn" style="justify-content: center; font-size: 1.1rem; background: var(--accent-orange); color: #0d0b12; font-weight: bold;" onclick="startGame()">
+                            ▶ INIZIA L'AVVENTURA
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function startGame() {
+            initAudioContext();
+            if (isAudioOn) {
+                startBackgroundMusic();
+            }
+            renderPrologue();
+        }
+
+        // --- PROLOGO: CASA ---
+        function renderPrologue() {
+            setLocation("Casa - Cucina");
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="story-box">
+                        <p>È la notte di Halloween. Ti alzi dal divano per bere un goccio d'acqua, vai in cucina e... ti blocchi.</p>
+                        <p><b>"Ma dove xé finia la me tazza?"</b></p>
+                    </div>
+                    <div class="dog-bubble">
+                        <span>🐶</span> Il tuo grosso Golden Retriever biondo ti guarda con due occhioni grandi, innocentissimi e totalmente vuoti. Sembra estraneo a qualsiasi forma di colpa.
+                    </div>
+                    <div class="choices-container">
+                        <button class="choice-btn" onclick="renderKitchenSearch()"><span class="choice-key">A</span> Cercare nella cucina.</button>
+                        <button class="choice-btn" onclick="renderRoomSearch()"><span class="choice-key">B</span> Controllare la tua stanza.</button>
+                        <button class="choice-btn" onclick="renderAskDog()"><span class="choice-key">C</span> Chiedere al cane dove sia.</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderKitchenSearch() {
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="story-box">
+                        <p>Apri i cassetti della cucina tra posate disordinate e vecchie scatole di tè. La tazza non c'è, ma rovistando in fondo trovi una vecchia fotografia di famiglia.</p>
+                        <p>Osservi i tuoi genitori adottivi sorridenti. Nello sfondo, posteggiata sulla ghiaia, c'è una vecchia macchina squadrata.</p>
+                    </div>
+                    <div class="choices-container">
+                        <button class="choice-btn" onclick="inspectPhotoFront()"><span class="choice-key">1</span> Guardare attentamente la macchina sullo sfondo.</button>
+                        <button class="choice-btn" onclick="inspectPhotoBack()"><span class="choice-key">2</span> Girare la fotografia e leggere il retro.</button>
+                        <button class="choice-btn" onclick="proceedToPhone()"><span class="choice-key">3</span> Lasciare perdere la foto e passare alla rubrica telefonica.</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function inspectPhotoFront() {
+            gameState.flags.sawPhoto = true;
+            addClue("Fotografia: Riconosciuta la macchina del 1988 sullo sfondo.");
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="story-box">
+                        <p>Aguzzi la vista. Quella targa e quel paraurti ammaccato... è la stessa identica macchina che vedrai tra poco nel parcheggio fuori casa.</p>
+                        <p>Un brivido freddo ti attraversa la schiena, misto a fastidio per la tazza sparita.</p>
+                    </div>
+                    <div class="choices-container">
+                        <button class="choice-btn" onclick="proceedToPhone()"><span class="choice-key">→</span> Continuare l'indagine in casa.</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function inspectPhotoFront() {
+            gameState.flags.sawPhoto = true;
+            addClue("Fotografia: Riconosciuta la macchina del 1988 sullo sfondo.");
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="story-box">
+                        <p>Aguzzi la vista. Quella targa e quel paraurti ammaccato... è la stessa identica macchina che vedrai tra poco nel parcheggio fuori casa.</p>
+                        <p>Un brivido freddo ti attraversa la schiena, misto a fastidio per la tazza sparita.</p>
+                    </div>
+                    <div class="choices-container">
+                        <button class="choice-btn" onclick="proceedToPhone()"><span class="choice-key">→</span> Continuare l'indagine in casa.</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function inspectPhotoBack() {
+            addClue("Retro foto: 'E. Moretti – 13 ottobre 1988 – Padiglione 3'");
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="story-box">
+                        <p>Sul retro della foto, scritto a mano con un inchiostro sbiadito:</p>
+                        <p><i>"E. Moretti – 13 ottobre 1988 – Padiglione 3"</i></p>
+                    </div>
+                    <div class="choices-container">
+                        <button class="choice-btn" onclick="proceedToPhone()"><span class="choice-key">→</span> Posare la foto e controllare il resto della casa.</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderRoomSearch() {
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="story-box">
+                        <p>Vai nella tua stanza. Cerchi sotto il letto tra calzini spaiati e polvere millenaria. Della tazza nessuna traccia.</p>
+                        <p>Il cane ti segue trotterellando e si ferma davanti all'armadio chiuso, dandosi una grattata all'orecchio.</p>
+                    </div>
+                    <div class="choices-container">
+                        <button class="choice-btn" onclick="renderAskDog()"><span class="choice-key">1</span> Chiedere al cane perché punta l'armadio.</button>
+                        <button class="choice-btn" onclick="proceedToPhone()"><span class="choice-key">2</span> Ignorare il cane e andare a consultare la rubrica.</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderAskDog() {
+            gameState.flags.checkedToothbrush = true;
+            addItem("Spazzolino con la 'M'");
+            addClue("Trovato uno spazzolino con la lettera 'M' nascosto nell'armadio dal cane.");
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="story-box">
+                        <p>Segui il cane. Con il muso spinge l'anta socchiusa dell'armadio. All'interno, nascosto dietro vecchie scatole di scarpe, trovi un vecchio spazzolino da denti con una piccola lettera "M" incisa sul manico.</p>
+                        <p>Un indizio bizzarro e apparentemente inutile, ma lo metti in tasca.</p>
+                    </div>
+                    <div class="dog-bubble">
+                        <span>🐶</span> Il cane emette un piccolo abbaio soddisfatto e scodinzola piano.
+                    </div>
+                    <div class="choices-container">
+                        <button class="choice-btn" onclick="proceedToPhone()"><span class="choice-key">→</span> Andare in salotto alla ricerca di risposte.</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- RUBRICA E TELEFONO ---
+        function proceedToPhone() {
+            setLocation("Casa - Salotto");
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="story-box">
+                        <p>Ti sposti in salotto. Sopra la vecchia scrivania di legno c'è una rubrica telefonica impolverata della famiglia.</p>
+                        <p>Sfoghi la frustrazione per la tazza e cerchi la voce <b>"MORETTI"</b>. Accanto al numero compaiono due note minacciose:</p>
+                        <p><i>"Non chiamare dopo il 13."</i><br><i>"Se chiedono della Sardegna, dire che non sappiamo niente."</i></p>
+                    </div>
+                    <div class="choices-container">
+                        <button class="choice-btn" onclick="callMoretti()"><span class="choice-key">1</span> Chiamare il numero.</button>
+                        <button class="choice-btn" onclick="continueSearchHome()"><span class="choice-key">2</span> Cercare ancora indizi sulla tazza in giro per casa.</button>
+                        <button class="choice-btn" onclick="killMosquito()"><span class="choice-key">3</span> Usare la pesante rubrica per ammazzare una zanzara ostinata sul muro.</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function callMoretti() {
+            gameState.flags.calledOldMan = true;
+            addClue("Telefonata a Moretti: 'Non portare il Golden Retriever al Padiglione 3.'");
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="story-box">
+                        <p>Componi il numero. Dopo tre squilli, risponde una voce maschile roca e anziana.</p>
+                        <p>Parli della foto, di Moretti e del 13 ottobre 1988. L'uomo ti interrompe gelido: <i>"Da dove l'hai presa?"</i></p>
+                        <p>Rispondi: <b>"Me l'ha portata el me can."</b></p>
+                        <p>L'uomo chiede che cane sia. Tu dici: <i>"Un Golden Retriever. Maschio. Biondo."</i></p>
+                        <p>L'uomo cambia repentinamente tono, urlando: <b>"Allora non portarlo al Padiglione 3!"</b> E riattacca bruscamente.</p>
+                    </div>
+                    <div class="choices-container">
+                        <button class="choice-btn" onclick="goToParking()"><span class="choice-key">→</span> Uscire di casa e andare al Parcheggio.</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function continueSearchHome() {
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="story-box">
+                        <p>Ispezioni ogni angolo del salotto, sposti i cuscini del divano. Niente tazza. Però la rubrica ti sfugge di mano e cade fragorosamente a terra, aprendosi spalancata...</p>
+                    </div>
+                    <div class="choices-container">
+                        <button class="choice-btn" onclick="goToParking()"><span class="choice-key">→</span> Raccogliere la rubrica (aperta sul Padiglione 3) e correre al Parcheggio.</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function killMosquito() {
+            addClue("Rubrica aperta per forza di gravità sulla pagina del Padiglione 3.");
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="story-box">
+                        <p>Schiacci la zanzara con la rubrica contro la parete con troppa foga. La rubrica scivola via di mano e cade pesantemente a terra, aprendosi esattamente alla pagina cerchiata del <b>"Padiglione 3"</b>.</p>
+                        <p>Il cane ti guarda come per dire: <i>metodi drastici, capo</i>.</p>
+                    </div>
+                    <div class="choices-container">
+                        <button class="choice-btn" onclick="goToParking()"><span class="choice-key">→</span> Uscire di casa verso il Parcheggio.</button>
+                    </div>
+                </div>
+            `;
+      }
+         // --- PRIMO PARCHEGGIO ---
+        function goToParking() {
+            setLocation("Parcheggio");
+            const content = document.getElementById('main-content');
+            
+            let photoRefText = gameState.flags.sawPhoto ? 
+                "<p><b>Riconosci subito la macchina squadrata sullo sfondo della vecchia foto:</b> è posteggiata proprio qui davanti, sotto un lampione tremolante.</p>" : 
+                "<p>Nel parcheggio buio noti una vecchia macchina squadrata posteggiata in un angolo isolato.</p>";
+
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="story-box">
+                        <p>Raggiungi il parcheggio deserto avvolto nella nebbia di Halloween.</p>
+                        ${photoRefText}
+                        <p>Il bagagliaio della vettura è socchiuso. Ti avvicini e trovi una scatola di cartone polverosa.</p>
+                        <p>All'interno c'è un foglio battuto a macchina:<br>
+                        <b>CAGLIARI - 13 ottobre 1988 - ore 22:47</b><br>
+                        <i>"Portarla al Padiglione 3."</i></p>
+                        <p>Sul retro: <i>"E. Moretti – Cagliari."</i></p>
+                    </div>
+                    <div class="dog-bubble">
+                        <span>🐶</span> Il cane annusa l'asfalto freddo e punta deciso la strada verso la periferia abbandonata.
+                    </div>
+                    <div class="choices-container">
+                        <button class="choice-btn" onclick="goToHospital()"><span class="choice-key">→</span> Seguire il cane verso il vecchio Ospedale Psichiatrico.</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- OSPEDALE PSICHIATRICO ABBANDONATO ---
+        function goToHospital() {
+            setLocation("Ospedale Psichiatrico - Padiglione 3");
+            gameState.flags.visitedHospital = true;
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="story-box">
+                        <p>Arrivi davanti al vecchio Padiglione 3. È pomeriggio inoltrato, ma l'atmosfera è plumbea e inquietante.</p>
+                        <p>Il cane all'inizio pianta le zampe a terra e si rifiuta di varcare la soglia, poi cede ed entra guardingo.</p>
+                        <p>Dentro ci sono sedie rovesciate, vecchi distributori arrugginiti e archivi sparsi. Trovi una fotografia della tua famiglia adottiva appoggiata su un tavolo.</p>
+                        <p>Ma noti un dettaglio assurdo: <b>sul bordo della fotografia compare la sagoma inconfondibile di un Golden Retriever.</b></p>
+                        <p><i>"…No. Non me dire che c'eri anche ti."</i></p>
+                        <p>All'improvviso, un tonfo sordo: qualcuno ti colpisce alle spalle! Cadi a terra perdendo i sensi...</p>
+                    </div>
+                    <div class="choices-container">
+                        <button class="choice-btn" onclick="wakeUpHospital()"><span class="choice-key">→</span> [ Risvegliarti sulla vecchia barella ]</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function wakeUpHospital() {
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="story-box">
+                        <p>Ti risvegli di sobbalzo su una vecchia barella metallica cigolante. La testa ti duole.</p>
+                        <p>Il cane è accanto a te e ti lecca la mano per sincerarsi che tu sia vivo. La fotografia della famiglia è sparita nel nulla.</p>
+                        <p>Il cane inizia ad annusare freneticamente un vecchio scaffale metallico nell'angolo buio della stanza.</p>
+                    </div>
+                    <div class="choices-container">
+                        <button class="choice-btn" onclick="exploreArchive()"><span class="choice-key">→</span> Seguire il cane allo scaffale e frugare nell'archivio.</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function exploreArchive() {
+            gameState.flags.foundBox = true;
+            addItem("Chiave misteriosa");
+            addItem("Braccialetto ospedaliero");
+            addClue("Trovata scatola metallica con foto di Cagliari 1988 e chiavi.");
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="story-box">
+                        <p>Il cane sposta con la testa un pannello. Trovi una scatola metallica segreta contenente:</p>
+                        <p>• Una foto di due persone sconosciute (sul retro: <i>"Cagliari, 1988"</i>)<br>
+                        • Un vecchio braccialetto ospedaliero<br>
+                        • Una chiave arrugginita<br>
+                        • Un biglietto: <i>"M. Moretti - 13/10/1988 - 23:15 - Consegnato al nucleo familiare"</i></p>
+                        <p>Trovi anche una vecchia cassetta audio etichettata: <i>"13/10/1988 – M."</i></p>
+                    </div>
+                    <div class="choices-container">
+                        <button class="choice-btn" onclick="playAudioTape1()"><span class="choice-key">1</span> Ascoltare la cassetta audio.</button>
+                        <button class="choice-btn" onclick="exploreHospitalBranches()"><span class="choice-key">2</span> Esplorare altre stanze dell'ospedale.</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function playAudioTape1() {
+            addClue("Registrazione 1: 'I due soggetti sono arrivati. Il bambino verrà consegnato domani.'");
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="story-box">
+                        <p>Inserisci la cassetta in un vecchio registratore portatile trovato sul banco:</p>
+                        <p><i>"Sono le ventitré e quindici. I due soggetti sono arrivati. Il bambino verrà consegnato alla famiglia domani mattina. Ma c'è un problema..."</i></p>
+                        <p>La registrazione si interrompe di colpo con uno screech metallico.</p>
+                    </div>
+                    <div class="choices-container">
+                        <button class="choice-btn" onclick="playAudioTape2()"><span class="choice-key">→</span> Ascoltare la seconda cassetta trovata nello scomparto.</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function playAudioTape2() {
+            addClue("Registrazione 2: 'Moretti pensa che sia finito. Il cane non deve sapere... Portate via il cane.'");
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="story-box">
+                        <p>Ascolti la seconda bobina. Voce femminile:</p>
+                        <p><i>"Se qualcuno trova questa registrazione, significa che il piano non ha funzionato. Il bambino non deve sapere chi sono i suoi genitori. E soprattutto cosa è successo quella notte. Moretti pensa che sia tutto finito. Si sbaglia."</i></p>
+                        <p>Rumore di vetri infranti.<br><i>"Portate via il cane."</i></p>
+                        <p>Ssbotti ad alta voce: <b>"Perché cazzo hanno nominato ti?!"</b> guardando il golden retriever, che sbadiglia beatamente.</p>
+                    </div>
+                    <div class="choices-container">
+                        <button class="choice-btn" onclick="exploreHospitalBranches()"><span class="choice-key">→</span> Continuare l'ispezione prima di andarsene.</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function exploreHospitalBranches() {
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="story-box">
+                        <p>L'atmosfera si fa pesante. Scegli come muoverti prima di lasciare il padiglione:</p>
+                    </div>
+                    <div class="choices-container">
+                        <button class="choice-btn" onclick="hospitalBranch('A')"><span class="choice-key">A</span> Seguire il cane in un corridoio laterale buio.</button>
+                        <button class="choice-btn" onclick="hospitalBranch('B')"><span class="choice-key">B</span> Cercare nei registri abbandonati dell'amministrazione.</button>
+                        <button class="choice-btn" onclick="hospitalBranch('C')"><span class="choice-key">C</span> Uscire rapidamente all'esterno e leggere i muri imbrattati.</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function hospitalBranch(choice) {
+            let msg = "";
+            if (choice === 'A') {
+                msg = "Trovi una cartella clinica dimenticata: <i>'Il cane deve essere trasferito prima della consegna del bambino.'</i> Incredibile.";
+                addClue("Cartella clinica: il cane era schedato nel 1988.");
+            } else if (choice === 'B') {
+                msg = "Trovi un vecchio volantino promozionale del Luna Park di Cagliari/provincia, datato 13 ottobre 1988, ore 23:40.";
+                addClue("Riferimento orario: Luna Park, 13 ottobre 1988, ore 23:40.");
+            } else {
+                msg = "Sul muro esterno scrostato qualcuno ha scritto a vernice fresca: <br><b>13 • 10 • 88 — NON ERA IL BAMBINO.</b>";
+                addClue("Muro esterno: 'Non era il bambino.'");
+            }
+
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="story-box">
+                        <p>${msg}</p>
+                        <p>Tutte le strade del mistero confluiscono inevitabilmente verso il prossimo punto di riferimento.</p>
+                    </div>
+                    <div class="choices-container">
+                        <button class="choice-btn" onclick="goToSecondParking()"><span class="choice-key">→</span> Tornare verso la zona dei parcheggi.</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- SECONDO PARCHEGGIO ---
+        function goToSecondParking() {
+            setLocation("Parcheggio Secondario");
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="story-box">
+                        <p>Torni al parcheggio secondario. Sopra il cofano della tua utilitaria trovi un registratore portatile che emette un ronzio.</p>
+                        <p>Premi play:<br>
+                        <i>"Se il ragazzo arriva fin qui, significa che Moretti ha fallito. Portatelo al luna park."</i></p>
+                    </div>
+                    <div class="choices-container">
+                        <button class="choice-btn" onclick="goToLunaPark()"><span class="choice-key">A</span> Andare subito al luna park abbandonato.</button>
+                        <button class="choice-btn" onclick="returnHomeForCup()"><span class="choice-key">B</span> Fare una deviazione e tornare a casa a cercare la tazza.</button>
+                        <button class="choice-btn" onclick="getExtraRecording()"><span class="choice-key">C</span> Ascoltare la traccia alternativa sul registratore.</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getExtraRecording() {
+            addClue("Registrazione extra: 'LUNA PARK - 23:40 - Impedire l'accesso alla casa.'");
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="story-box">
+                        <p>Ascolti l'altra traccia del nastro:</p>
+                        <p><i>"LUNA PARK – 23:40. Se il bambino dovesse scoprire la verità, bisogna impedirgli di arrivare alla casa."</i></p>
+                    </div>
+                    <div class="choices-container">
+                        <button class="choice-btn" onclick="goToLunaPark()"><span class="choice-key">→</span> Dirigersi al Luna Park.</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function returnHomeForCup() {
+            gameState.flags.cupBroken = true;
+            addClue("Trovato frammento di ceramica blu dietro un mobile a casa.");
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="story-box">
+                        <p>Decidi di fare un salto a casa prima del Luna Park. Dietro la credenza della cucina trovi un frammento di ceramica blu.</p>
+                        <p>Il cane ti guarda con un'espressione colpevole da Oscar, ma non capisci ancora l'antifona.</p>
+                    </div>
+                    <div class="choices-container">
+                        <button class="choice-btn" onclick="goToLunaPark()"><span class="choice-key">→</span> Ora sì, vai al Luna Park.</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- LUNA PARK ABBANDONATO ---
+        function goToLunaPark() {
+            setLocation("Luna Park Abbandonato");
+            gameState.flags.visitedLunaPark = true;
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="story-box">
+                        <p>Il luna park è chiuso da decenni. È la notte di Halloween: tutto è buio e spettrale, tranne un'unica ruota panoramica arrugginita che gira lentamente cigolando nel vento.</p>
+                        <p><b>"No. Questa roba no me piase per niente."</b></p>
+                    </div>
+                    <div class="choices-container">
+                        <button class="choice-btn" onclick="lunaParkChoice('dog')"><span class="choice-key">A</span> Seguire il cane tra le baracche dei tiro a segno.</button>
+                        <button class="choice-btn" onclick="lunaParkChoice('ticket')"><span class="choice-key">B</span> Entrare nella vecchia biglietteria sbarrata.</button>
+                        <button class="choice-btn" onclick="lunaParkChoice('wheel')"><span class="choice-key">C</span> Salire sulla ruota panoramica in movimento.</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function lunaParkChoice(path) {
+            let detailHTML = "";
+            if (path === 'dog') {
+                addClue("Luna Park: Trovata foto strappata dei genitori con un Golden Retriever nel 1988.");
+                detailHTML = `<p>Segui il cane dietro il tendone del baraccone. Trovi una chiave, una foto strappata che ritrae i due genitori biologici insieme a... un Golden Retriever identico al tuo.</p>`;
+            } else if (path === 'ticket') {
+                addClue("Registro biglietteria: 'MORETTI – 3 PERSONE + 1 CANE'");
+                detailHTML = `<p>Forzi la porta della biglietteria. Sulla scrivania c'è un registro polveroso datato 13 ottobre 1988:<br><b>"MORETTI – 3 PERSONE + 1 CANE"</b>.</p>`;
+            } else {
+                addClue("Ruota panoramica: Trovata la tazza, poi distrutta dal cane.");
+                detailHTML = `
+                    <p>Sali sulla cabina della ruota. La struttura si ferma improvvisamente a metà altezza nel vuoto.</p>
+                    <p>Una voce gracchiante dagli altoparlanti arrugginiti sussurra: <i>"Non dovevi portarlo con te."</i></p>
+                    <p>Il cane, tremando nella cabina, gratta furiosamente il pavimento di lamiera. Sotto un sedile salta fuori una tazza bianca con bordo blu intatta!</p>
+                    <p>La prendi in mano sollevato, ma il cane si gira di scatto, la urta goffamente con la testa...</p>
+                    <p style="text-align:center; color:var(--accent-orange); font-weight:bold; font-size:1.2rem; margin:10px 0;">CRASH! ☕💥</p>
+                    <p>La tazza cade nel vuoto e si fracassa al suolo.</p>
+                    <p><b>Protagonista: "MA TE SI SCEMO?! EERA LA ME TAZZA!"</b></p>
+                    <p>È il primo vero, inconfondibile indizio che il cane c'entra qualcosa.</p>
+                `;
+            }
+
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="story-box">${detailHTML}</div>
+                    <div class="choices-container">
+                        <button class="choice-btn" onclick="goToHouseOfMirrors()"><span class="choice-key">→</span> Proseguire verso la Casa degli Specchi.</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- CASA DEGLI SPECCHI ---
+        function goToHouseOfMirrors() {
+            setLocation("Casa degli Specchi");
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="story-box">
+                        <p>Il percorso del luna park ti conduce inevitabilmente dentro la vecchia e labirintica Casa degli Specchi.</p>
+                        <p>Il cane è stranamente agitato, ulula piano riflesso in cento vetri deformi.</p>
+                        <p>Nello specchio di fronte a te vedi chiaramente la sagoma di due persone in piedi dietro le tue spalle. Ti volti di scatto... Non c'è nessuno.</p>
+                    </div>
+                    <div class="choices-container">
+                        <button class="choice-btn" onclick="mirrorChoice('A')"><span class="choice-key">A</span> Seguire il cane in un corridoio secondario di specchi.</button>
+                        <button class="choice-btn" onclick="mirrorChoice('B')"><span class="choice-key">B</span> Cercare l'uscita leggendo le incisioni sui vetri.</button>
+                        <button class="choice-btn" onclick="mirrorChoice('C')"><span class="choice-key">C</span> Osservare attentamente i riflessi e i vecchi supporti.</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function mirrorChoice(opt) {
+            let text = "";
+            if (opt === 'A') {
+                text = "Il cane scava con le zampe sotto una base di legno e fa emergere una busta nascosta con una fotografia dei due sconosciuti.";
+                addClue("Casa degli Specchi: Busta nascosta con foto dei genitori biologici.");
+            } else if (opt === 'B') {
+                text = "Trovi un messaggio scritto a rossetto su uno specchio: <i>'Loro venivano qui ogni 13 ottobre. Cagliari non era la loro casa.'</i>";
+                addClue("Scritta specchio: I genitori venivano qui ogni 13 ottobre.");
+            } else {
+                text = "Tiri via un pannello e trovi un vecchio collare impolverato con una targhetta metallica: <i>'MORETTI – 1988'</i>.";
+                addClue("Collare storico: targhetta 'MORETTI - 1988'.");
+            }
+
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="story-box">
+                        <p>${text}</p>
+                        <p>Hai quasi esaurito le tappe di questo viaggio assurdo. È ora di tornare a casa.</p>
+                    </div>
+                    <div class="choices-container">
+                        <button class="choice-btn" onclick="returnH
+              };
+    </script>
+</body>
+</html>
