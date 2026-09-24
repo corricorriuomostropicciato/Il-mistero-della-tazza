@@ -582,23 +582,6 @@
             `;
         }
 
-        function inspectPhotoFront() {
-            gameState.flags.sawPhoto = true;
-            addClue("Fotografia: Riconosciuta la macchina del 1988 sullo sfondo.");
-            const content = document.getElementById('main-content');
-            content.innerHTML = `
-                <div class="screen">
-                    <div class="story-box">
-                        <p>Aguzzi la vista. Quella targa e quel paraurti ammaccato... è la stessa identica macchina che vedrai tra poco nel parcheggio fuori casa.</p>
-                        <p>Un brivido freddo ti attraversa la schiena, misto a fastidio per la tazza sparita.</p>
-                    </div>
-                    <div class="choices-container">
-                        <button class="choice-btn" onclick="proceedToPhone()"><span class="choice-key">→</span> Continuare l'indagine in casa.</button>
-                    </div>
-                </div>
-            `;
-        }
-
         function inspectPhotoBack() {
             addClue("Retro foto: 'E. Moretti – 13 ottobre 1988 – Padiglione 3'");
             const content = document.getElementById('main-content');
@@ -720,8 +703,9 @@
                     </div>
                 </div>
             `;
-      }
-         // --- PRIMO PARCHEGGIO ---
+        }
+
+        // --- PRIMO PARCHEGGIO ---
         function goToParking() {
             setLocation("Parcheggio");
             const content = document.getElementById('main-content');
@@ -1038,8 +1022,111 @@
                         <p>Hai quasi esaurito le tappe di questo viaggio assurdo. È ora di tornare a casa.</p>
                     </div>
                     <div class="choices-container">
-                        <button class="choice-btn" onclick="returnH
-              };
+                        <button class="choice-btn" onclick="returnHomeFinal()"><span class="choice-key">→</span> Tornare finalmente a casa.</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- RITORNO A CASA E VERITÀ FINALE ---
+        function returnHomeFinal() {
+            setLocation("Casa - Ritorno Finale");
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="story-box">
+                        <p>È ormai tarda notte. La porta della cucina è socchiusa, esattamente come l'avevi lasciata.</p>
+                        <p>Sul tavolo della cucina è magicamente apparsa una vecchia fotografia con una scritta a penna: <i>"13 ottobre 1988 – prima di consegnarlo."</i></p>
+                        <p><b>Protagonista: "Consegnare chi?"</b></p>
+                        <p>Il cane guaisce e corre frenetico verso il soggiorno, indicando il pavimento sotto il letto.</p>
+                    </div>
+                    <div class="choices-container">
+                        <button class="choice-btn" onclick="revealTruth('A')"><span class="choice-key">A</span> Seguire il cane sotto il letto.</button>
+                        <button class="choice-btn" onclick="revealTruth('B')"><span class="choice-key">B</span> Esaminare a fondo la fotografia sul tavolo.</button>
+                        <button class="choice-btn" onclick="revealTruth('C')"><span class="choice-key">C</span> Cercare direttamente tracce della tazza.</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function revealTruth(path) {
+            let finalNote = "";
+            if (path === 'A') {
+                finalNote = "Sotto il letto il cane spinge fuori un mucchiarella di oggetti rubati nelle settimane scorse: calzini, chiavi e... frammenti della tua tazza blu preferita.";
+            } else if (path === 'B') {
+                finalNote = "Osservando la foto capisci tutto: l'uomo, la donna e il neonato in fasce. Quel neonato eri tu. La tua adozione in Veneto nascondeva un passato oscuro a Cagliari legato a Moretti.";
+            } else {
+                finalNote = "Nel cestino della carta trovi i cocci blu della tazza. Il cerchio si chiude.";
+            }
+
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen">
+                    <div class="story-box">
+                        <p>${finalNote}</p>
+                        <hr style="border-color: #33294a; margin: 10px 0;">
+                        <p><b>LA VERITÀ:</b> Nel 1988 sei stato dato in adozione. I tuoi genitori biologici (i Moretti) erano implicati in vicende torbide a Cagliari, e la notte del 13 ottobre accadde qualcosa di terribile prima che la famiglia adottiva veneta ti portasse via.</p>
+                        <p>La storia misteriosa della notte di Halloween era assolutamente reale. Il passato è venuto a galla...</p>
+                        <p><b>MA...</b> Guardi in basso verso il Golden Retriever.</p>
+                    </div>
+                    <div class="choices-container">
+                        <button class="choice-btn" onclick="renderEnding()"><span class="choice-key">→</span> [ Affrontare il vero colpevole ]</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- SCHERMATA FINALE ---
+        function renderEnding() {
+            setLocation("Fine dell'avventura");
+            stopBackgroundMusic(); // Ferma la musica alla conclusione
+            const content = document.getElementById('main-content');
+            content.innerHTML = `
+                <div class="screen ending-box">
+                    <h2>THE END 🎃</h2>
+                    <div class="story-box" style="text-align: left; margin-bottom: 15px;">
+                        <p>Fissi il cane negli occhi. Vicino a lui c'è la tazza irrimediabilmente rotta.</p>
+                        <p>Capisci finalmente la verità, quella vera e banale:</p>
+                        <p style="color: var(--accent-orange); font-weight: bold; text-align: center; margin: 10px 0;">È stato lui a rompere la tazza.</p>
+                        <p>È stato sempre lui a spostarla, nasconderla dietro i mobili e farla sparire per giorni.</p>
+                        <p>E, mossa dopo mossa, ti ha fatto girare come un trottolo per tutta la notte di Halloween solo perché <b>non voleva essere sgridato</b> per il danno combinato.</p>
+                        <p><b>Tu:</b> "Te ga rotto ti la tazza."</p>
+                        <p>Il cane abbassa le orecchie, colpevole ma dolcissimo.</p>
+                        <p><b>Tu:</b> "E mi te ga fatto girar tutta la notte perché no te volevi che te sgridassi?"</p>
+                        <p>Il cane ti guarda con la massima innocenza.</p>
+                        <p><b>Tu:</b> "Sei un mona."</p>
+                        <p>Il cane fa un piccolo saltello e ti lecca affettuosamente la mano.</p>
+                    </div>
+                    <button class="choice-btn" style="justify-content: center; background: var(--accent-orange); color: var(--bg-color); font-weight: bold;" onclick="restartGame()">
+                        🔄 RICOMINCIA L'AVVENTURA
+                    </button>
+                </div>
+            `;
+        }
+
+        function restartGame() {
+            gameState = {
+                inventory: [],
+                clues: [],
+                flags: {
+                    sawPhoto: false,
+                    checkedToothbrush: false,
+                    calledOldMan: false,
+                    foundBox: false,
+                    visitedHospital: false,
+                    visitedLunaPark: false,
+                    cupBroken: false,
+                    dogSuspected: false
+                }
+            };
+            updateCounters();
+            renderSplash();
+        }
+
+        // Avvio iniziale al caricamento della pagina
+        window.onload = function() {
+            renderSplash();
+        };
     </script>
 </body>
 </html>
