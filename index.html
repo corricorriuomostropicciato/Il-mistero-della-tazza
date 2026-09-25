@@ -349,95 +349,123 @@
     </div>
 
     <script>
-        // --- MOTORE AUDIO WEB AUDIO API (Con timing sequenziale reale per loop di ~16-18 secondi) ---
-        let audioCtx = null;
-        let isAudioOn = true;
-        let musicTimeout = null;
-        let noteIndex = 0;
+        // --- MOTORE AUDIO RETRO HORROR-DEMENZIALE (LOOP CONTINUO) ---
+let audioCtx = null;
+let isPlaying = false;
+let nextNoteTime = 0.0;
+let currentStep = 0;
+let timerID = null;
 
-        const melodyPattern = [
-            { f: 220,    dur: 350, wait: 900,  type: 'triangle' },
-            { f: 261.63, dur: 300, wait: 600,  type: 'sine' },
-            { f: 311.13, dur: 400, wait: 1400, type: 'triangle' },
-            { f: 220,    dur: 350, wait: 900,  type: 'triangle' },
-            { f: 110,    dur: 800, wait: 1200, type: 'sine' },
-            { f: 659.25, dur: 150, wait: 2000, type: 'sine' },
-            { f: 0,      dur: 100, wait: 2500, type: 'sine' }
-        ];
+        // Configurazione del loop (16 step, ritmo in 4/4 incalzante ma giocoso)
+const tempo = 135; // Velocità arcade sostenuta
+const secondsPerBeat = 60.0 / tempo;
+const stepTime = secondsPerBeat / 2; // Semicrome per movimento continuo
 
-        function initAudioContext() {
-            if (!audioCtx) {
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                audioCtx = new AudioContext();
-            }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-        }
+// Frequenze in Hz (Tonalità: La minore, scala minore armonica per il tocco horror)
+const NOTES = {
+    'A2': 110.00, 'C3': 130.81, 'E3': 164.81, 'F3': 174.61, 
+    'G#3': 207.65, 'A3': 220.00, 'C4': 261.63, 'D4': 293.66, 
+    'E4': 329.63, 'F4': 349.23, 'G#4': 415.30, 'A4': 440.00,
+    'REST': 0
+};
 
-        function playNote(freq, duration, type) {
-            if (!isAudioOn || !audioCtx || freq === 0) return;
-            try {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                
-                osc.type = type || 'sine';
-                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+// Linea melodica principale (orecchiabile, stupida e inquietante)
+const melodyPattern = [
+    'A4', 'C4', 'E4', 'A4', 'G#4', 'E4', 'C4', 'REST',
+    'F4', 'E4', 'D4', 'F4', 'E4', 'C4', 'A3', 'REST',
+    'A4', 'C4', 'E4', 'F4', 'G#4', 'A4', 'C5', 'B4',
+    'A4', 'G#4', 'F4', 'E4', 'D4', 'C4', 'B3', 'E4'
+];
 
-                gain.gain.setValueAtTime(0, audioCtx.currentTime);
-                gain.gain.linearRampToValueAtTime(0.08, audioCtx.currentTime + 0.05);
-                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + (duration / 1000));
+// Linea di basso costante e saltellante (stile vecchio PC/arcade)
+const bassPattern = [
+    'A2', 'A2', 'C3', 'A2', 'E3', 'E3', 'C3', 'E3',
+    'F3', 'F3', 'A2', 'F3', 'E3', 'D3', 'C3', 'B2',
+    'A2', 'A2', 'C3', 'A2', 'F3', 'F3', 'G#3', 'G#3',
+    'A2', 'E3', 'F3', 'E3', 'D3', 'C3', 'B2', 'E3'
+];
+     function initAudio() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+}
 
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
+function playTone(freq, time, duration, type, volume) {
+    if (freq === 0) return;
+    
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, time);
+    
+    // Envelope per evitare "clic" e dare definizione arcade
+    gain.gain.setValueAtTime(0.001, time);
+    gain.gain.linearRampToValueAtTime(volume, time + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
+    
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    
+    osc.start(time);
+    osc.stop(time + duration);
+}
 
-                osc.start();
-                osc.stop(audioCtx.currentTime + (duration / 1000));
-            } catch (e) {
-                console.log("Audio play error:", e);
-            }
-        }
+function scheduler() {
+    // Pianifica le note in anticipo per evitare lag audio
+    while (nextNoteTime < audioCtx.currentTime + 0.1) {
+        let noteNameM = melodyPattern[currentStep];
+        let noteNameB = bassPattern[currentStep];
+        
+        let freqM = NOTES[noteNameM] || 0;
+        let freqB = NOTES[noteNameB] || 0;
+        
+        // Suona la melodia (onda quadra retrò un po' nasale/demenziale)
+        playTone(freqM, nextNoteTime, stepTime * 0.85, 'square', 0.08);
+        
+        // Suona il basso (onda triangolare morbida ma corposa)
+        playTone(freqB, nextNoteTime, stepTime * 0.9, 'triangle', 0.12);
+        
+        // Avanza nel loop
+        nextNoteTime += stepTime;
+        currentStep = (currentStep + 1) % melodyPattern.length;
+    }
+}
 
-        function scheduleNextNote() {
-            if (!isAudioOn) return;
-            
-            const item = melodyPattern[noteIndex];
-            if (item.f > 0) {
-                playNote(item.f, item.dur, item.type);
-            }
-            
-            noteIndex = (noteIndex + 1) % melodyPattern.length;
-            
-            musicTimeout = setTimeout(scheduleNextNote, item.wait);
-        }
+function startMusicLoop() {
+    if (isPlaying) return;
+    initAudio();
+    isPlaying = true;
+    currentStep = 0;
+    nextNoteTime = audioCtx.currentTime + 0.05;
+    
+    // Timer di controllo frequente per la schedulazione fluida
+    timerID = setInterval(scheduler, 25);
+}
 
-        function startBackgroundMusic() {
-            if (musicTimeout) return;
-            initAudioContext();
-            noteIndex = 0;
-            scheduleNextNote();
-        }
+function stopMusicLoop() {
+    isPlaying = false;
+    if (timerID) {
+        clearInterval(timerID);
+        timerID = null;
+    }
+}
 
-        function stopBackgroundMusic() {
-            if (musicTimeout) {
-                clearTimeout(musicTimeout);
-                musicTimeout = null;
-            }
-            noteIndex = 0;
-        }
-
-        function toggleAudio() {
-            isAudioOn = !isAudioOn;
-            const btn = document.getElementById('btn-audio');
-            if (isAudioOn) {
-                btn.textContent = "Audio: ON";
-                startBackgroundMusic();
-            } else {
-                btn.textContent = "Audio: OFF";
-                stopBackgroundMusic();
-            }
-        }
-
+// Funzione di interfaccia collegata al tuo pulsante Audio ON/OFF esistente
+function toggleAudio() {
+    const audioBtn = document.getElementById('audioToggleBtn'); // Mantieni l'ID originale del tuo bottone
+    if (isPlaying) {
+        stopMusicLoop();
+        if (audioBtn) audioBtn.innerText = "Audio: OFF";
+    } else {
+        startMusicLoop();
+        if (audioBtn) audioBtn.innerText = "Audio: ON";
+    }
+}  
+        
         // --- STATO DEL GIOCO ---
         let gameState = {
             inventory: [],
