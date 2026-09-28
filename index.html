@@ -158,10 +158,12 @@
         let currentStep = 0;
         let timerID = null;
 
-        const tempo = 135;
+        // Configurazione del loop (16 step, ritmo in 4/4 incalzante ma giocoso)
+        const tempo = 135; 
         const secondsPerBeat = 60.0 / tempo;
         const stepTime = secondsPerBeat / 2;
 
+        // Frequenze in Hz (Tonalità: La minore)
         const NOTES = {
             'A2': 110.00, 'C3': 130.81, 'E3': 164.81, 'F3': 174.61, 
             'G#3': 207.65, 'A3': 220.00, 'C4': 261.63, 'D4': 293.66, 
@@ -262,14 +264,14 @@
             }
         }
 
-        // --- LOGICA DEL GIOCO E BATTUTE DEL PROTAGONISTA AGGIORNATE ---
+        // --- LOGICA DEL GIOCO ---
         function makeChoice(option) {
             const storyPanel = document.getElementById('story-panel');
             const choicesPanel = document.getElementById('choices-panel');
             const inventoryPanel = document.getElementById('inventory-panel');
 
             if (option === 1) {
-                storyPanel.innerHTML = "Mi avvicino lentamente, schifato. La tazza brilla di un verde fosforescente e si sente un gorgoglio strano... Ma che schifezza è? Dentro c'è un liquido denso che bolle da solo. Va in mona, non la tocco neanche morto.";
+                storyPanel.innerHTML = "Mi avvicino lentamente, un po' schifato. La tazza brilla di un verde fosforescente e si sente un gorgoglio strano... Ma che schifezza è? Dentro c'è un liquido denso che bolle da solo. Va in mona, non la tocco neanche morto.";
                 inventoryPanel.innerHTML = "Inventario: Tazza Misteriosa";
                 choicesPanel.innerHTML = `
                     <button class="choice-btn" onclick="makeChoice(10)">A. Bevi il liquido misterioso</button>
@@ -282,9 +284,25 @@
                     <button class="choice-btn" onclick="makeChoice(1)">B. Torna alla tazza</button>
                 `;
             } else if (option === 3) {
-                storyPanel.innerHTML = "Provo a correre verso la porta, ma è sbarrata! Maledizione, è chiusa a chiave. Una voce metallica dagli altoparlanti gracchia: <i>'La tazza deve essere svuotata...'</i> Ma vaffan... chi è che parla?!";
+                storyPanel.innerHTML = "Provo a correre verso la porta, ma è sbarrata! Maledizione, è chiusa a chiave. Una voce metallica dagli altoparlanti gracchia: <i>'La tazza deve essere svuotata...'</i> Ma vaffan... chi è che parla?! Che mona che sono a esser venuto qui.";
                 choicesPanel.innerHTML = `
                     <button class="choice-btn" onclick="makeChoice(1)">A. Torna sui tuoi passi verso la tazza</button>
+                `;
+            } else if (option === 10) {
+                storyPanel.innerHTML = "Bechi giù quel intruglio verdastro... Sento un bruciore di stomaco assurdo, le pareti iniziano a girare e... No me piasé affatto l'effetto che fa. Mi sa che sono svenuto. <b>(FINE - Finale Tossico)</b>";
+                choicesPanel.innerHTML = `
+                    <button class="choice-btn" onclick="location.reload()">Ricomincia da capo</button>
+                `;
+            } else if (option === 11) {
+                storyPanel.innerHTML = "Poso delicatamente la tazza sul tavolo e tiro un sospiro di sollievo. Meglio non rischiare rogne. Adesso vedo se trovo una via d'uscita sensata da questo cucinino. <b>(FINE - Finale Prudente)</b>";
+                choicesPanel.innerHTML = `
+                    <button class="choice-btn" onclick="location.reload()">Ricomincia da capo</button>
+                `;
+            } else if (option === 20) {
+                storyPanel.innerHTML = "Mi avvicino al muro e leggo le scritte: 'Chi beve la tazza troverà la pace... o forse no'. Brutta storia, qui c'è sotto qualcos'altro. Meglio guardarsi le spalle.";
+                choicesPanel.innerHTML = `
+                    <button class="choice-btn" onclick="makeChoice(1)">A. Torna alla tazza</button>
+                    <button class="choice-btn" onclick="makeChoice(3)">B. Cerca di sfondare la porta</button>
                 `;
             } else {
                 storyPanel.innerHTML = "La storia continua... No me piasé affatto come va a finire. (Fine della demo del prototipo)";
