@@ -136,7 +136,7 @@
         </header>
 
         <div id="story-panel">
-            Benvenuto. Ti trovi in una cucina buia e spettrale. Sul tavolo di legno logoro c'è una tazza misteriosa che emana una strana luce verdastra...
+            Che freddo cane in questa cucina. Mi guardo intorno e c'è una puzza di umido incredibile. Sul tavolo di legno logoro c'è una tazza misteriosa che emana una strana luce verdastra... Ma cossa xé sta roba?
         </div>
 
         <div id="choices-panel">
@@ -158,12 +158,10 @@
         let currentStep = 0;
         let timerID = null;
 
-        // Configurazione del loop (16 step, ritmo in 4/4 incalzante ma giocoso)
-        const tempo = 135; // Velocità arcade sostenuta
+        const tempo = 135;
         const secondsPerBeat = 60.0 / tempo;
-        const stepTime = secondsPerBeat / 2; // Semicrome per movimento continuo
+        const stepTime = secondsPerBeat / 2;
 
-        // Frequenze in Hz (Tonalità: La minore, scala minore armonica per il tocco horror)
         const NOTES = {
             'A2': 110.00, 'C3': 130.81, 'E3': 164.81, 'F3': 174.61, 
             'G#3': 207.65, 'A3': 220.00, 'C4': 261.63, 'D4': 293.66, 
@@ -171,7 +169,6 @@
             'REST': 0
         };
 
-        // Linea melodica principale (orecchiabile, stupida e inquietante)
         const melodyPattern = [
             'A4', 'C4', 'E4', 'A4', 'G#4', 'E4', 'C4', 'REST',
             'F4', 'E4', 'D4', 'F4', 'E4', 'C4', 'A3', 'REST',
@@ -179,7 +176,6 @@
             'A4', 'G#4', 'F4', 'E4', 'D4', 'C4', 'B3', 'E4'
         ];
 
-        // Linea di basso costante e saltellante (stile vecchio PC/arcade)
         const bassPattern = [
             'A2', 'A2', 'C3', 'A2', 'E3', 'E3', 'C3', 'E3',
             'F3', 'F3', 'A2', 'F3', 'E3', 'D3', 'C3', 'B2',
@@ -205,7 +201,6 @@
             osc.type = type;
             osc.frequency.setValueAtTime(freq, time);
             
-            // Envelope per evitare "clic" e dare definizione arcade
             gain.gain.setValueAtTime(0.001, time);
             gain.gain.linearRampToValueAtTime(volume, time + 0.02);
             gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
@@ -218,7 +213,6 @@
         }
 
         function scheduler() {
-            // Pianifica le note in anticipo per evitare lag audio
             while (nextNoteTime < audioCtx.currentTime + 0.1) {
                 let noteNameM = melodyPattern[currentStep];
                 let noteNameB = bassPattern[currentStep];
@@ -226,13 +220,9 @@
                 let freqM = NOTES[noteNameM] || 0;
                 let freqB = NOTES[noteNameB] || 0;
                 
-                // Suona la melodia (onda quadra retrò un po' nasale/demenziale)
                 playTone(freqM, nextNoteTime, stepTime * 0.85, 'square', 0.08);
-                
-                // Suona il basso (onda triangolare morbida ma corposa)
                 playTone(freqB, nextNoteTime, stepTime * 0.9, 'triangle', 0.12);
                 
-                // Avanza nel loop
                 nextNoteTime += stepTime;
                 currentStep = (currentStep + 1) % melodyPattern.length;
             }
@@ -244,8 +234,6 @@
             isPlaying = true;
             currentStep = 0;
             nextNoteTime = audioCtx.currentTime + 0.05;
-            
-            // Timer di controllo frequente per la schedulazione fluida
             timerID = setInterval(scheduler, 25);
         }
 
@@ -274,33 +262,32 @@
             }
         }
 
-        // --- LOGICA DEL GIOCO (Mantenuta intatta) ---
+        // --- LOGICA DEL GIOCO E BATTUTE DEL PROTAGONISTA AGGIORNATE ---
         function makeChoice(option) {
             const storyPanel = document.getElementById('story-panel');
             const choicesPanel = document.getElementById('choices-panel');
             const inventoryPanel = document.getElementById('inventory-panel');
 
             if (option === 1) {
-                storyPanel.innerHTML = "Ti avvicini lentamente. La tazza brilla di un verde fosforescente e si sente un leggero gorgoglio... Dentro c'è un liquido denso che sembra borbottare da solo.";
+                storyPanel.innerHTML = "Mi avvicino lentamente, schifato. La tazza brilla di un verde fosforescente e si sente un gorgoglio strano... Ma che schifezza è? Dentro c'è un liquido denso che bolle da solo. Va in mona, non la tocco neanche morto.";
                 inventoryPanel.innerHTML = "Inventario: Tazza Misteriosa";
                 choicesPanel.innerHTML = `
                     <button class="choice-btn" onclick="makeChoice(10)">A. Bevi il liquido misterioso</button>
                     <button class="choice-btn" onclick="makeChoice(11)">B. Rimetti la tazza a posto</button>
                 `;
             } else if (option === 2) {
-                storyPanel.innerHTML = " tastoni lungo il muro freddo trovi un interruttore. Click! La lampadina sopra di te si accende sfarfallando, rivelando scritte inquietanti tracciate sul muro.";
+                storyPanel.innerHTML = "Vado a tastoni lungo il muro freddo finché trovo l'interruttore. Click! La lampadina si accende sfarfallando e vedo delle scritte assurde sul muro. Ma perché mi succedono tutte a me?";
                 choicesPanel.innerHTML = `
                     <button class="choice-btn" onclick="makeChoice(20)">A. Leggi le scritte sul muro</button>
                     <button class="choice-btn" onclick="makeChoice(1)">B. Torna alla tazza</button>
                 `;
             } else if (option === 3) {
-                storyPanel.innerHTML = "Provi a correre verso la porta, ma è sbarrata! Una voce metallica e robotica dall'altoparlante sussurra: <i>'La tazza deve essere svuotata...'</i>";
+                storyPanel.innerHTML = "Provo a correre verso la porta, ma è sbarrata! Maledizione, è chiusa a chiave. Una voce metallica dagli altoparlanti gracchia: <i>'La tazza deve essere svuotata...'</i> Ma vaffan... chi è che parla?!";
                 choicesPanel.innerHTML = `
                     <button class="choice-btn" onclick="makeChoice(1)">A. Torna sui tuoi passi verso la tazza</button>
                 `;
             } else {
-                // Gestione generica / reset
-                storyPanel.innerHTML = "La storia continua... (Fine della demo del prototipo)";
+                storyPanel.innerHTML = "La storia continua... No me piasé affatto come va a finire. (Fine della demo del prototipo)";
                 choicesPanel.innerHTML = `
                     <button class="choice-btn" onclick="location.reload()">Ricomincia da capo</button>
                 `;
