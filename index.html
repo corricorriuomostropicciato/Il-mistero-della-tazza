@@ -1,316 +1,112 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Il mistero della tazza</title>
-    <style>
-        :root {
-            --bg-color: #121212;
-            --panel-bg: #1e1e1e;
-            --accent-color: #ff5722;
-            --accent-hover: #f4511e;
-            --text-color: #e0e0e0;
-            --text-muted: #aaaaaa;
-            --border-color: #333333;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Courier New', Courier, monospace;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-
-        #game-container {
-            width: 100%;
-            max-width: 650px;
-            background-color: var(--panel-bg);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        header {
-            background-color: #181818;
-            padding: 12px 20px;
-            border-bottom: 2px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        h1 {
-            font-size: 1.2rem;
-            color: var(--accent-color);
-            margin: 0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        #audioToggleBtn {
-            background-color: #333;
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            padding: 6px 12px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.85rem;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-        }
-
-        #audioToggleBtn:hover {
-            background-color: #444;
-        }
-
-        #audioToggleBtn.active {
-            background-color: var(--accent-color);
-            color: white;
-            border-color: var(--accent-hover);
-        }
-
-        #story-panel {
-            padding: 25px;
-            font-size: 1rem;
-            line-height: 1.6;
-            min-height: 140px;
-            max-height: 250px;
-            overflow-y: auto;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        #choices-panel {
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            background-color: #181818;
-        }
-
-        .choice-btn {
-            background-color: #2a2a2a;
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            padding: 12px 16px;
-            text-align: left;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.95rem;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: all 0.15s ease;
-        }
-
-        .choice-btn:hover {
-            background-color: var(--accent-color);
-            color: white;
-            border-color: var(--accent-hover);
-            transform: translateX(4px);
-        }
-
-        #inventory-panel {
-            padding: 10px 20px;
-            background-color: #151515;
-            border-top: 1px solid var(--border-color);
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-    </style>
-</head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Halloween — La Tazza Scomparsa</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:#09070b;color:#eee;font-family:Georgia,serif;height:100%;overflow:hidden}body{display:flex;align-items:center;justify-content:center}.game{width:min(1100px,100vw);height:min(680px,100vh);position:relative;background:#141018;border:2px solid #39263b;overflow:hidden}.screen{position:absolute;inset:0}.start{display:flex;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle at 50% 35%,#34202e,#0b080d 70%)}.start h1{font-size:clamp(32px,6vw,66px);margin:0 0 10px;color:#e6b46b;text-shadow:0 4px #24131e}.start p{color:#c7b9c9}.btn{border:1px solid #a16b42;background:#24151f;color:#f2d5ad;padding:13px 20px;margin:8px;border-radius:5px;font:inherit;cursor:pointer}.btn:hover{background:#3a202c}.world{display:none;background:#111}.hud{position:absolute;left:0;right:0;top:0;height:58px;background:linear-gradient(#130e17ee,#130e1700);z-index:20;padding:12px 16px;display:flex;justify-content:space-between;pointer-events:none}.place{font-weight:bold;color:#e3b675}.hint{color:#d8cad8;font-size:14px}.scene{position:absolute;inset:58px 0 72px;overflow:hidden;background:#1b1820}.strip{position:absolute;left:0;top:0;height:100%;min-width:1500px}.ground{position:absolute;bottom:0;height:18%;left:0;right:0;background:#17131a;border-top:2px solid #493343}.sky{position:absolute;inset:0;background:linear-gradient(#16111d,#28202b 62%,#17131b)}.moon{position:absolute;width:90px;height:90px;border-radius:50%;background:#d8c99e;right:9%;top:9%;box-shadow:0 0 35px #c7ae7755}.star{position:absolute;width:3px;height:3px;background:#d8c9ae;border-radius:50%}.room{position:absolute;bottom:18%;height:62%;border:3px solid #3f2a42;background:#25202a}.room .label{position:absolute;top:8px;left:12px;color:#b9a4b9;font-size:13px}.door{position:absolute;bottom:0;width:80px;height:150px;background:#17121a;border:3px solid #684552;cursor:pointer}.window{position:absolute;width:150px;height:100px;background:#101820;border:4px solid #543b55}.prop{position:absolute;bottom:18%;cursor:pointer}.table{width:160px;height:25px;background:#69432e;border-radius:3px}.table:after{content:"";position:absolute;left:18px;right:18px;top:22px;height:80px;border-left:10px solid #4b3025;border-right:10px solid #4b3025}.cab{width:100px;height:140px;background:#49302f;border:4px solid #70494a}.sofa{width:220px;height:75px;background:#493b4c;border:4px solid #625067;border-radius:14px}.car{position:absolute;bottom:18%;width:350px;height:100px;background:#3c3940;border-radius:60px 80px 15px 15px;border:5px solid #655a65}.car:before,.car:after{content:"";position:absolute;bottom:-25px;width:55px;height:55px;background:#151318;border-radius:50%;border:5px solid #4a414b}.car:before{left:45px}.car:after{right:45px}.car .trunk{position:absolute;right:10px;top:12px;width:95px;height:45px;border:3px solid #7a6b76;background:#302b32}.hospital{background:linear-gradient(#111218,#17151b)}.hospital .building{position:absolute;bottom:18%;left:180px;width:950px;height:65%;background:#28272b;border:5px solid #4b4850}.hospital .building:before{content:"PADIGLIONE 3";position:absolute;top:20px;left:30px;color:#837b86;font:700 24px monospace;letter-spacing:5px}.hospital .win{position:absolute;width:90px;height:110px;background:#11151a;border:4px solid #55515a;bottom:25%}.hospital .door2{position:absolute;bottom:18%;left:640px;width:100px;height:190px;background:#111;border:4px solid #5c515c}.park{background:linear-gradient(#15121a,#27202c 65%,#151116)}.wheel{position:absolute;width:300px;height:300px;border:7px solid #826173;border-radius:50%;bottom:20%;left:820px}.wheel:before,.wheel:after{content:"";position:absolute;background:#826173;left:50%;top:50%;transform-origin:left center}.wheel:before{width:140px;height:5px}.wheel:after{width:140px;height:5px;transform:rotate(90deg)}.cabin{position:absolute;width:45px;height:35px;border:3px solid #826173;background:#29202a}.mirror{background:linear-gradient(90deg,#141018,#28202e,#141018)}.mirrorPanel{position:absolute;bottom:18%;width:120px;height:380px;border:6px solid #6b5871;background:linear-gradient(110deg,#26303b,#12151b,#303946)}.mirrorPanel:after{content:"";position:absolute;inset:20px;border:1px solid #8d7891}.player,.dog{position:absolute;bottom:18%;z-index:10;transition:none}.player{width:34px;height:70px}.player .head{width:28px;height:28px;border-radius:50%;background:#c99573;position:absolute;top:0;left:3px}.player .body{width:25px;height:35px;background:#496070;position:absolute;top:28px;left:5px;border-radius:4px}.player .legs{position:absolute;bottom:0;left:7px;width:7px;height:18px;background:#24212a;box-shadow:13px 0 #24212a}.dog{width:90px;height:55px}.dog .body{position:absolute;bottom:4px;left:12px;width:68px;height:38px;background:#d6a86d;border-radius:45% 55% 40% 40%;border:2px solid #9b7042}.dog .head{position:absolute;right:0;top:3px;width:45px;height:45px;background:#e0b477;border-radius:48%;border:2px solid #9b7042}.dog .ear{position:absolute;right:35px;top:7px;width:22px;height:30px;background:#8b633e;border-radius:60%;transform:rotate(25deg)}.dog .tail{position:absolute;left:0;bottom:27px;width:28px;height:10px;border-radius:10px;background:#e0b477;transform:rotate(-25deg)}.bubble{position:absolute;bottom:calc(18% + 95px);left:20px;right:20px;min-height:52px;background:#0d0b10e8;border:1px solid #75556f;border-radius:8px;padding:12px 16px;z-index:30;display:none}.bubble.show{display:block}.bubble b{color:#e4b66e}.objectHint{position:absolute;bottom:calc(18% + 5px);z-index:25;background:#0c0a0fdd;border:1px solid #806075;padding:6px 10px;border-radius:5px;display:none;font:13px monospace}.objectHint.show{display:block}.bottom{position:absolute;bottom:0;left:0;right:0;height:72px;background:#0d0a10;z-index:25;border-top:1px solid #3c293c;display:flex;align-items:center;justify-content:space-between;padding:8px 14px}.inv{font-size:12px;color:#bfaec0;max-width:70%;line-height:1.35}.controls{display:flex;gap:5px}.key{border:1px solid #514052;border-radius:4px;padding:5px 8px;color:#d5c5d6;font:12px monospace}.mobile{display:none;position:absolute;right:12px;bottom:80px;z-index:40;gap:5px}.mobile button{width:48px;height:48px;background:#201722dd;color:#eee;border:1px solid #795b73;border-radius:8px;font-size:18px}.modal{position:absolute;inset:0;background:#09070ddd;z-index:100;display:none;align-items:center;justify-content:center;padding:20px}.modal.show{display:flex}.panel{max-width:700px;background:#17121b;border:1px solid #6d5067;padding:25px;border-radius:8px;line-height:1.55;box-shadow:0 10px 50px #000}.panel h2{color:#e3b675;margin-top:0}.small{font-size:13px;color:#ad9fad}.end{font-size:18px}.photo{border:8px solid #d0bd99;background:#e5d6b7;color:#392e26;padding:20px;max-width:520px;font-family:Georgia,serif}.photo img{max-width:100%}@media(max-width:700px){.game{height:100vh;border:0}.controls{display:none}.mobile{display:flex}.hint{display:none}.bottom{height:64px}.scene{inset:58px 0 64px}.bubble{bottom:calc(18% + 85px)}.player{transform:scale(.9);transform-origin:bottom}.dog{transform:scale(.85);transform-origin:bottom}}
+</style></head>
 <body>
+<div class="game" id="game">
+<section class="screen start" id="start"><div><div style="font-size:54px">🎃 ☕</div><h1>LA TAZZA SCOMPARSA</h1><p>Una notte di Halloween. Una tazza rotta. Una storia iniziata nel 1988.</p><button class="btn" id="newBtn">NUOVA PARTITA</button><button class="btn" id="continueBtn" style="display:none">CONTINUA</button><p class="small">← → / A D per camminare · E per interagire · Invio per continuare</p></div></section>
+<section class="screen world" id="world"><div class="hud"><div class="place" id="place">CASA</div><div class="hint" id="hudHint">← → cammina · E interagisci</div></div><div class="scene" id="scene"></div><div class="bubble" id="bubble"></div><div class="objectHint" id="objectHint"></div><div class="bottom"><div class="inv" id="inv">Inventario: vuoto</div><div class="controls"><span class="key">←</span><span class="key">→</span><span class="key">E</span><span class="key">INVIO</span></div></div><div class="mobile"><button data-key="left">◀</button><button data-key="right">▶</button><button data-key="interact">E</button></div></section>
+<div class="modal" id="modal"><div class="panel" id="modalPanel"></div></div>
+</div>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const state={scene:'casa',x:220,inv:[],flags:{},discoveries:[],dogX:150,dogState:'FOLLOW',knowledge:0,dialog:null,dialogIndex:0};
+const SAVE='tazza_scomparsa_save_v3';
+let keys={left:false,right:false};
+const scenes={casa:{name:'CASA',width:1800},parcheggio:{name:'PARCHEGGIO',width:1500},ospedale:{name:'PADIGLIONE 3',width:1900},lunapark:{name:'LUNA PARK',width:1900},specchi:{name:'CASA DEGLI SPECCHI',width:1700}};
+function save(){try{localStorage.setItem(SAVE,JSON.stringify(state));}catch(e){}}
+function load(){try{let s=JSON.parse(localStorage.getItem(SAVE));if(s){Object.assign(state,s);return true}}catch(e){}return false}
+function has(f){return !!state.flags[f]}
+function set(f,v=true){state.flags[f]=v;if(v&&!state.discoveries.includes(f))state.discoveries.push(f);save();}
+function add(item){if(!state.inv.includes(item))state.inv.push(item);save();renderInv()}
+function say(lines,after){state.dialog=Array.isArray(lines)?lines:[lines];state.dialogIndex=0;state.dialogAfter=after||null;showDialog();}
+function showDialog(){if(!state.dialog)return;const line=state.dialog[state.dialogIndex];$('bubble').innerHTML='<b>'+line[0]+'</b> '+line[1];$('bubble').classList.add('show')}
+function advanceDialog(){if(!state.dialog)return false;state.dialogIndex++;if(state.dialogIndex>=state.dialog.length){const a=state.dialogAfter;state.dialog=null;state.dialogAfter=null;$('bubble').classList.remove('show');if(a)a();}else showDialog();return true}
+function renderInv(){let t=state.inv.length?state.inv.join(' · '):'vuoto';$('inv').textContent='Inventario: '+t}
+function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function el(cls,style,html){const d=document.createElement('div');d.className=cls;if(style)d.style.cssText=style;if(html)d.innerHTML=html;return d}
+function buildScene(){
+ const sc=scenes[state.scene], root=$('scene');root.innerHTML='';root.style.width='100%';
+ const strip=el('strip');strip.style.width=sc.width+'px';root.appendChild(strip);
+ const sky=el('sky');strip.appendChild(sky);
+ for(let i=0;i<32;i++){let st=el('star');st.style.left=(Math.random()*sc.width)+'px';st.style.top=(10+Math.random()*42)+'%';strip.appendChild(st)}
+ const moon=el('moon');strip.appendChild(moon);
+ const ground=el('ground');strip.appendChild(ground);
+ if(state.scene==='casa')buildCasa(strip); else if(state.scene==='parcheggio')buildParking(strip); else if(state.scene==='ospedale')buildHospital(strip); else if(state.scene==='lunapark')buildPark(strip); else buildMirrors(strip);
+ const p=el('player');p.id='player';p.innerHTML='<div class="head"></div><div class="body"></div><div class="legs"></div>';strip.appendChild(p);
+ const d=el('dog');d.id='dog';d.innerHTML='<div class="body"></div><div class="head"></div><div class="ear"></div><div class="tail"></div>';strip.appendChild(d);
+ updatePositions();
+}
+function prop(x,cls,label,action){const o=el('prop '+cls,'left:'+x+'px',label?'<span class="label">'+label+'</span>':'');o.dataset.action=action;o.dataset.x=x;return o}
+function buildCasa(s){
+ let r=el('room','left:70px;width:700px');r.innerHTML='<span class="label">CUCINA</span>';s.appendChild(r);
+ let table=prop(240,'table','Tavolo','cup');s.appendChild(table);
+ let cab=prop(520,'cab','Credenza','cabinet');s.appendChild(cab);
+ let win=el('window','left:400px;bottom:48%');s.appendChild(win);
+ let r2=el('room','left:800px;width:700px');r2.innerHTML='<span class="label">SOGGIORNO</span>';s.appendChild(r2);
+ let sofa=prop(930,'sofa','Divano','sofa');s.appendChild(sofa);
+ let phone=prop(1200,'cab','Telefono','phone');s.appendChild(phone);
+ let door=el('door','left:720px');door.dataset.action='door';door.title='Esci verso il parcheggio';s.appendChild(door);
+ let wardrobe=prop(1470,'cab','Armadio','wardrobe');s.appendChild(wardrobe);
+}
+function buildParking(s){let car=el('car','left:260px');car.innerHTML='<div class="trunk"></div>';car.dataset.action='car';car.dataset.x=260;s.appendChild(car);let box=prop(650,'cab','Bagagliaio','box');s.appendChild(box);let rec=prop(1000,'cab','Registratore','recorder');s.appendChild(rec);let door=el('door','left:80px');door.dataset.action='home';s.appendChild(door);let gate=el('door','left:1360px');gate.dataset.action='hospital';s.appendChild(gate)}
+function buildHospital(s){let b=el('building');s.appendChild(b);for(let x=250;x<1150;x+=180){let w=el('window win','left:'+x+'px;bottom:40%');s.appendChild(w)}let door=el('door2');door.dataset.action='hospitalEnter';s.appendChild(door);let archive=prop(880,'cab','Archivio','archive');s.appendChild(archive);let locker=prop(1120,'cab','Armadietto M.','locker');s.appendChild(locker);let rec=prop(1380,'cab','Registratore','hospitalrec');s.appendChild(rec);let wall=prop(1580,'cab','Muro','wall');s.appendChild(wall);let exit=el('door','left:40px');exit.dataset.action='parking';s.appendChild(exit)}
+function buildPark(s){let gate=el('door','left:50px');gate.dataset.action='hospital';s.appendChild(gate);let car=prop(380,'cab','Biglietteria','ticket');s.appendChild(car);let wheel=el('wheel');wheel.dataset.action='wheel';s.appendChild(wheel);for(let i=0;i<8;i++){let c=el('cabin','left:'+(950+130*Math.cos(i*Math.PI/4))+'px;bottom:'+(35+22*Math.sin(i*Math.PI/4))+'%');s.appendChild(c)}let booth=prop(620,'cab','Cabina di controllo','control');s.appendChild(booth);let exit=el('door','left:1700px');exit.dataset.action='mirrors';s.appendChild(exit)}
+function buildMirrors(s){for(let x=180;x<1450;x+=230){let m=el('mirrorPanel','left:'+x+'px');m.dataset.action='mirror';m.dataset.x=x;s.appendChild(m)}let exit=el('door','left:1510px');exit.dataset.action='home';s.appendChild(exit)}
+function updatePositions(){const sc=scenes[state.scene];const strip=$('scene').firstElementChild;const p=$('player'),d=$('dog');p.style.left=state.x+'px';d.style.left=state.dogX+'px';strip.style.transform='translateX('+Math.min(0,Math.max(-(sc.width-$('scene').clientWidth),$('scene').clientWidth/2-state.x))+'px)';placeHints()}
+function nearObject(){const strip=$('scene').firstElementChild;let best=null,dist=Infinity;strip.querySelectorAll('[data-action]').forEach(o=>{let ox=parseFloat(o.dataset.x||o.style.left||0);let d=Math.abs(state.x-ox);if(d<dist&&d<95){dist=d;best=o}});return best}
+function placeHints(){let o=nearObject(),h=$('objectHint');if(!o){h.classList.remove('show');return}let x=parseFloat(o.dataset.x||o.style.left||state.x);h.textContent='E · '+(o.querySelector('.label')?.textContent||'interagisci');h.style.left=Math.max(10,Math.min($('scene').clientWidth-180,x-state.x+$('scene').clientWidth/2-70))+'px';h.classList.add('show')}
+function move(dx){if(state.dialog)return;state.x=Math.max(25,Math.min(scenes[state.scene].width-40,state.x+dx));if(Math.abs(state.dogX-state.x)>150){state.dogState='LEAD';state.dogX+=Math.sign(state.x-state.dogX)*5}else state.dogState='FOLLOW';state.dogX+=(state.x-state.dogX)*0.08;updatePositions()}
+function interact(){if(advanceDialog())return;let o=nearObject();if(!o)return;doAction(o.dataset.action)}
+function travel(to,x){state.scene=to;state.x=x||180;state.dogX=state.x-75;save();buildScene();$('place').textContent=scenes[to].name;sceneIntro(to)}
+function sceneIntro(to){if(to==='casa'&&!has('intro')){set('intro');say([['Lidia?','Ma dove xé finia la me tazza?'],['','Il Golden ti guarda. Fa finta di niente.'],['','È Halloween. Fuori è già buio.']],null)}
+ if(to==='parcheggio'&&!has('parkIntro')){set('parkIntro');say([['','Il vecchio parcheggio è quasi vuoto. Il cane annusa l’aria.'],['','Quella macchina... ti sembra stranamente familiare.']],null)}
+ if(to==='ospedale'&&!has('hospitalIntro')){set('hospitalIntro');say([['','Il cane si irrigidisce. Davanti a voi c’è il Padiglione 3.'],['','Le finestre sono nere. Non sembra esserci nessuno.']],null)}
+ if(to==='lunapark'&&!has('parkIntro2')){set('parkIntro2');say([['','Il luna park è spento. Solo la ruota panoramica è illuminata.'],['','Il cane tira leggermente il guinzaglio verso l’interno.']],null)}
+ if(to==='specchi'&&!has('mirrorIntro')){set('mirrorIntro');say([['','La casa degli specchi è aperta. Dentro non si sente nulla.'],['','Poi, per un attimo, nello specchio dietro di te compaiono due persone.']],null)} }
+function doAction(a){
+ if(a==='cup'){if(!has('searchedCup')){set('searchedCup');say([['','La tazza non c’è. Solo un cerchietto di polvere sul tavolo.'],['','Il cane sbadiglia. Innocente. Troppo innocente.']],null)}else if(!has('fragment1')){set('fragment1');add('frammento di ceramica');say([['','Sotto il tavolo trovi un piccolo frammento blu.'],['','Il cane guarda altrove.']],null)}else say([['','Niente. La tazza continua a essere scomparsa.']],null)}
+ else if(a==='cabinet'){if(!has('photo')){set('photo');add('foto di famiglia');say([['','Dietro una vecchia scatola trovi una fotografia.'],['','Sul retro: “E. Moretti — 13 ottobre 1988 — Padiglione 3”.'],['','Moretti. Quel nome ti dice qualcosa.']],()=>{set('knowsMoretti');set('knowsPadiglione3')})}else if(!has('toothbrush')){set('toothbrush');add('spazzolino');say([['','In fondo al cassetto trovi uno spazzolino vecchio.'],['','Sul cappuccio c’è una M.']],null)}else say([['','Solo vecchie cose di casa.']],null)}
+ else if(a==='phone'){if(!has('phonebook')){set('phonebook');add('rubrica');say([['','Cerchi MORETTI nella vecchia rubrica.'],['','Numero trovato. Accanto: “Non chiamare dopo il 13.”'],['','E sotto: “Se chiedono della Sardegna, dire che non sappiamo niente.”']],null)}else if(!has('calledMoretti')){set('calledMoretti');say([['Moretti','Pronto?'],['Lidia','Sono io. Ho trovato una foto del 1988.'],['Moretti','Hai un Golden Retriever?'],['Lidia','Sì.'],['Moretti','Allora non portarlo al Padiglione 3.'],['','CLICK. La linea cade. Il cane abbaia.']],null)}else say([['','Nessuno risponde.']],null)}
+ else if(a==='sofa'){if(!has('searchedAgain')){set('searchedAgain');say([['','Tra i cuscini trovi una ricevuta del 1988. Cagliari.'],['','Il cane si alza e va verso la porta.']],null)}else say([['','Il divano è vuoto. Il cane ti guarda.']],null)}
+ else if(a==='wardrobe'){if(!has('phonebook')){say([['','Solo vestiti e polvere.']],null)}else {set('knowsPadiglione3');say([['','Dietro una giacca trovi un biglietto: “Padiglione 3”.'],['','Non è una coincidenza.']],null)}}
+ else if(a==='door'){travel('parcheggio',120)}
+ else if(a==='home'){travel('casa',1450)}
+ else if(a==='car'){if(has('photo')||has('knowsMoretti')){set('noticedCar');say([['','Ora lo riconosci. È il modello della fotografia.'],['','Apri il bagagliaio. Dentro c’è una scatola con scritto: CAGLIARI — 13 ottobre 1988 — 22:47.']],()=>{add('scatola Cagliari');set('foundBox');set('knowsCagliari')})}else say([['','Una vecchia macchina. Ti sembra familiare, ma non sai perché.']],null)}
+ else if(a==='box'){if(!has('foundBox')){say([['','Il bagagliaio è chiuso. La macchina però ti sembra familiare.']],null)}else if(!has('archiveKey')){set('archiveKey');add('chiave dell’archivio');say([['','Nella scatola trovi una chiave e una cassetta.'],['','Etichetta: “Padiglione 3 — 23:15”.']],null)}else say([['','La scatola è vuota.']],null)}
+ else if(a==='recorder'){if(!has('foundBox'))say([['','Un vecchio registratore. Non sai da dove venga.']],null);else {set('tape1');say([['Registrazione','Sono le ventitré e quindici.'],['','I due soggetti sono arrivati.'],['','Il bambino verrà consegnato alla famiglia domani mattina.'],['','Ma c’è un problema.']],null)}}
+ else if(a==='hospital'){if(has('knowsPadiglione3'))travel('ospedale',170);else say([['','Non sai perché dovresti andare da quella parte.']],null)}
+ else if(a==='hospitalEnter'){if(!has('hospitalInside')){set('hospitalInside');say([['','Il corridoio odora di umidità.'],['','Da qualche parte cade una goccia.'],['','Il cane annusa una porta e poi ti guarda.']],null)}else say([['','Il corridoio continua nel buio.']],null)}
+ else if(a==='archive'){if(has('archiveKey')&&!has('archiveFound')){set('archiveFound');add('foto dei due sconosciuti');add('braccialetto ospedaliero');say([['','La chiave apre l’archivio.'],['','Dentro: una foto di due sconosciuti, un braccialetto e un documento.'],['','M. Moretti — 13/10/1988 — Consegnato al nucleo familiare.'],['','Sul retro: “Cagliari, 1988.”']],()=>{state.knowledge++;})}else say([['','Scaffali pieni di cartelle.']],null)}
+ else if(a==='locker'){if(has('archiveFound')&&!has('hospitalFolder')){set('hospitalFolder');add('cartella ospedaliera');set('dog1988');say([['','Nell’armadietto M. trovi una cartella.'],['','“Il cane deve essere trasferito prima della consegna.”'],['','Perché parlano di un cane del 1988?'],['','Il tuo Golden ti guarda. Poi tira verso l’uscita.']],null)}else say([['','L’armadietto è chiuso o vuoto.']],null)}
+ else if(a==='hospitalrec'){if(!has('tape2')){set('tape2');say([['Registrazione','Il bambino non deve sapere chi sono i suoi genitori.'],['','E soprattutto non deve sapere cosa è successo quella notte.'],['','Moretti pensa che sia tutto finito. Si sbaglia.'],['','Portate via il cane.'],['Lidia','Perché cazzo hanno nominato te?']],null)}else say([['','Sul registratore c’è scritto: “Archivio audio — Padiglione 3”.'],['','Sul retro: “Luna Park — ingresso vecchio.”']],null)}
+ else if(a==='wall'){if(!has('wall')){set('wall');state.knowledge++;say([['','Sul muro: “13 • 10 • 88”'],['','Sotto: “NON ERA IL BAMBINO.”'],['','Il cane guarda verso il parcheggio.']],null)}else say([['','La scritta è sempre lì.']],null)}
+ else if(a==='parking'){travel('parcheggio',1200)}
+ else if(a==='ticket'){if(!has('ticketLog')){set('ticketLog');add('registro del luna park');say([['','Registro: “13 ottobre 1988 — MORETTI — 3 PERSONE + 1 CANE”.'],['','Una voce sussurra: “Non dovevi portarlo con te.”']],()=>{state.knowledge++;})}else if(!has('key3')){set('key3');add('chiave n.3');say([['','Trovi una piccola chiave numerata 3.']],null)}else say([['','Niente altro.']],null)}
+ else if(a==='control'){if(!has('wheelKey')){set('wheelKey');add('chiave della ruota');say([['','La cabina di controllo contiene una chiave.'],['','Serve alla ruota panoramica.']],null)}else say([['','Vecchi interruttori. Tutto spento.']],null)}
+ else if(a==='wheel'){if(has('wheelKey')&&!has('wheelGag')){set('wheelGag');say([['','La ruota si muove lentamente.'],['','Una voce dal basso: “Non dovevi portarlo con te.”'],['','Il cane trova una tazza in una cabina.'],['Lidia','MA TE SI SCEMO?!'],['','Il cane la fa cadere. CRASH.'],['','Non è la tua tazza. Questa è una nuova stupidaggine.']],null)}else if(has('wheelGag'))say([['','La ruota gira nel buio. Il cane finge di non conoscerti.']],null);else say([['','La ruota non parte. Ti serve una chiave.']],null)}
+ else if(a==='mirrors'){travel('specchi',120)}
+ else if(a==='mirror'){if(!has('parents')){set('parents');add('foto strappata');say([['','Nel riflesso vedi due persone dietro di te. Ti giri. Nessuno.'],['','Dietro uno specchio trovi una fotografia.'],['','Sono loro. I due sconosciuti della cartella.'],['','E improvvisamente capisci: erano i tuoi genitori biologici.']],()=>{state.knowledge++;})}else if(!has('address')){set('address');add('indirizzo');say([['','Sul retro della foto: “Loro venivano qui ogni 13 ottobre.”'],['','“Cagliari non era la loro casa.”']],null)}else if(!has('collar')){set('collar');add('collare Moretti 1988');say([['','Dietro lo specchio trovi un vecchio collare.'],['','MORETTI — 1988.'],['','Il tuo cane lo annusa. Poi distoglie lo sguardo.']],null)}else say([['','Per un istante il tuo riflesso sembra non seguire il movimento. Poi tutto torna normale.']],null)}
+}
+function maybeFinal(){if(state.scene==='casa'&&has('parents')&&has('fragment1')&&!has('ending')){set('ending');showEnding()}}
+function showEnding(){setTimeout(()=>{let facts=state.knowledge;let frag=has('fragment2');$('modalPanel').innerHTML='<h2>La tazza scomparsa</h2><div class="end">La foto sul tavolo dice: <i>13 ottobre 1988 — prima di consegnarlo.</i><br><br>“Consegnare chi?”<br><br>Il cane corre in camera. Lo segui. Sotto il letto trovi un altro frammento blu.'+(frag?'':'')+'<br><br>La verità sulla notte del 1988 era reale. Moretti, il bambino, i due genitori, il cane. Non era una leggenda.<br><br>E poi guardi il cane. Guarda te. Guarda il pavimento.<br><br>La tazza è dietro un mobile. Rotta.<br><br><b>Il colpevole era il tuo cane.</b><br><br>Ha passato tutta la notte a trascinarti in giro per il Veneto pur di evitare la sgridata.<br><br><span class="small">Cose scoperte sulla notte del 1988: '+facts+'/5</span></div><button class="btn" id="restartEnd">RICOMINCIA</button>';$('modal').classList.add('show');$('restartEnd').onclick=()=>{localStorage.removeItem(SAVE);location.reload()};},300)}
+function keydown(e){if(e.target.tagName==='BUTTON')return;if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a'){e.preventDefault();keys.left=true;move(-18)}else if(e.key==='ArrowRight'||e.key.toLowerCase()==='d'){e.preventDefault();keys.right=true;move(18)}else if(e.key.toLowerCase()==='e'){e.preventDefault();interact()}else if(e.key==='Enter'||e.key===' '){e.preventDefault();advanceDialog()}}
+function keyup(e){if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a')keys.left=false;if(e.key==='ArrowRight'||e.key.toLowerCase()==='d')keys.right=false}
+document.addEventListener('keydown',keydown);document.addEventListener('keyup',keyup);
+$('newBtn').onclick=()=>{localStorage.removeItem(SAVE);location.reload()};
+$('continueBtn').onclick=()=>{if(load()){startGame()}};
+if(localStorage.getItem(SAVE))$('continueBtn').style.display='inline-block';
+function startGame(){$('start').style.display='none';$('world').style.display='block';buildScene();$('place').textContent=scenes[state.scene].name;renderInv();sceneIntro(state.scene)}
+for(const b of document.querySelectorAll('.mobile button')){b.addEventListener('click',()=>{let k=b.dataset.key;if(k==='left')move(-28);else if(k==='right')move(28);else interact()})}
+// prevent browser scroll / key scrolling while game is active
+window.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown',' '].includes(e.key))e.preventDefault()},{passive:false});
+})();
+</script>
+</body></html>
 
-    <div id="game-container">
-        <header>
-            <h1>☕ Il mistero della tazza</h1>
-            <button id="audioToggleBtn" onclick="toggleAudio()">Audio: OFF</button>
-        </header>
-
-        <div id="story-panel">
-            Che freddo cane in questa cucina. Mi guardo intorno e c'è una puzza di umido incredibile. Sul tavolo di legno logoro c'è una tazza misteriosa che emana una strana luce verdastra... Ma cossa xé sta roba?
-        </div>
-
-        <div id="choices-panel">
-            <button class="choice-btn" onclick="makeChoice(1)">1. Esamina la tazza da vicino</button>
-            <button class="choice-btn" onclick="makeChoice(2)">2. Cerca un interruttore della luce</button>
-            <button class="choice-btn" onclick="makeChoice(3)">3. Fuggi via urlando</button>
-        </div>
-
-        <div id="inventory-panel">
-            Inventario: Vuoto
-        </div>
-    </div>
-
-    <script>
-        // --- MOTORE AUDIO RETRO HORROR-DEMENZIALE (LOOP CONTINUO) ---
-        let audioCtx = null;
-        let isPlaying = false;
-        let nextNoteTime = 0.0;
-        let currentStep = 0;
-        let timerID = null;
-
-        // Configurazione del loop (16 step, ritmo in 4/4 incalzante ma giocoso)
-        const tempo = 135; 
-        const secondsPerBeat = 60.0 / tempo;
-        const stepTime = secondsPerBeat / 2;
-
-        // Frequenze in Hz (Tonalità: La minore)
-        const NOTES = {
-            'A2': 110.00, 'C3': 130.81, 'E3': 164.81, 'F3': 174.61, 
-            'G#3': 207.65, 'A3': 220.00, 'C4': 261.63, 'D4': 293.66, 
-            'E4': 329.63, 'F4': 349.23, 'G#4': 415.30, 'A4': 440.00,
-            'REST': 0
-        };
-
-        const melodyPattern = [
-            'A4', 'C4', 'E4', 'A4', 'G#4', 'E4', 'C4', 'REST',
-            'F4', 'E4', 'D4', 'F4', 'E4', 'C4', 'A3', 'REST',
-            'A4', 'C4', 'E4', 'F4', 'G#4', 'A4', 'C5', 'B4',
-            'A4', 'G#4', 'F4', 'E4', 'D4', 'C4', 'B3', 'E4'
-        ];
-
-        const bassPattern = [
-            'A2', 'A2', 'C3', 'A2', 'E3', 'E3', 'C3', 'E3',
-            'F3', 'F3', 'A2', 'F3', 'E3', 'D3', 'C3', 'B2',
-            'A2', 'A2', 'C3', 'A2', 'F3', 'F3', 'G#3', 'G#3',
-            'A2', 'E3', 'F3', 'E3', 'D3', 'C3', 'B2', 'E3'
-        ];
-
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-        }
-
-        function playTone(freq, time, duration, type, volume) {
-            if (freq === 0) return;
-            
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            
-            osc.type = type;
-            osc.frequency.setValueAtTime(freq, time);
-            
-            gain.gain.setValueAtTime(0.001, time);
-            gain.gain.linearRampToValueAtTime(volume, time + 0.02);
-            gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
-            
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            
-            osc.start(time);
-            osc.stop(time + duration);
-        }
-
-        function scheduler() {
-            while (nextNoteTime < audioCtx.currentTime + 0.1) {
-                let noteNameM = melodyPattern[currentStep];
-                let noteNameB = bassPattern[currentStep];
-                
-                let freqM = NOTES[noteNameM] || 0;
-                let freqB = NOTES[noteNameB] || 0;
-                
-                playTone(freqM, nextNoteTime, stepTime * 0.85, 'square', 0.08);
-                playTone(freqB, nextNoteTime, stepTime * 0.9, 'triangle', 0.12);
-                
-                nextNoteTime += stepTime;
-                currentStep = (currentStep + 1) % melodyPattern.length;
-            }
-        }
-
-        function startMusicLoop() {
-            if (isPlaying) return;
-            initAudio();
-            isPlaying = true;
-            currentStep = 0;
-            nextNoteTime = audioCtx.currentTime + 0.05;
-            timerID = setInterval(scheduler, 25);
-        }
-
-        function stopMusicLoop() {
-            isPlaying = false;
-            if (timerID) {
-                clearInterval(timerID);
-                timerID = null;
-            }
-        }
-
-        function toggleAudio() {
-            const audioBtn = document.getElementById('audioToggleBtn');
-            if (isPlaying) {
-                stopMusicLoop();
-                if (audioBtn) {
-                    audioBtn.innerText = "Audio: OFF";
-                    audioBtn.classList.remove('active');
-                }
-            } else {
-                startMusicLoop();
-                if (audioBtn) {
-                    audioBtn.innerText = "Audio: ON";
-                    audioBtn.classList.add('active');
-                }
-            }
-        }
-
-        // --- LOGICA DEL GIOCO ---
-        function makeChoice(option) {
-            const storyPanel = document.getElementById('story-panel');
-            const choicesPanel = document.getElementById('choices-panel');
-            const inventoryPanel = document.getElementById('inventory-panel');
-
-            if (option === 1) {
-                storyPanel.innerHTML = "Mi avvicino lentamente, un po' schifato. La tazza brilla di un verde fosforescente e si sente un gorgoglio strano... Ma che schifezza è? Dentro c'è un liquido denso che bolle da solo. Va in mona, non la tocco neanche morto.";
-                inventoryPanel.innerHTML = "Inventario: Tazza Misteriosa";
-                choicesPanel.innerHTML = `
-                    <button class="choice-btn" onclick="makeChoice(10)">A. Bevi il liquido misterioso</button>
-                    <button class="choice-btn" onclick="makeChoice(11)">B. Rimetti la tazza a posto</button>
-                `;
-            } else if (option === 2) {
-                storyPanel.innerHTML = "Vado a tastoni lungo il muro freddo finché trovo l'interruttore. Click! La lampadina si accende sfarfallando e vedo delle scritte assurde sul muro. Ma perché mi succedono tutte a me?";
-                choicesPanel.innerHTML = `
-                    <button class="choice-btn" onclick="makeChoice(20)">A. Leggi le scritte sul muro</button>
-                    <button class="choice-btn" onclick="makeChoice(1)">B. Torna alla tazza</button>
-                `;
-            } else if (option === 3) {
-                storyPanel.innerHTML = "Provo a correre verso la porta, ma è sbarrata! Maledizione, è chiusa a chiave. Una voce metallica dagli altoparlanti gracchia: <i>'La tazza deve essere svuotata...'</i> Ma vaffan... chi è che parla?! Che mona che sono a esser venuto qui.";
-                choicesPanel.innerHTML = `
-                    <button class="choice-btn" onclick="makeChoice(1)">A. Torna sui tuoi passi verso la tazza</button>
-                `;
-            } else if (option === 10) {
-                storyPanel.innerHTML = "Bechi giù quel intruglio verdastro... Sento un bruciore di stomaco assurdo, le pareti iniziano a girare e... No me piasé affatto l'effetto che fa. Mi sa che sono svenuto. <b>(FINE - Finale Tossico)</b>";
-                choicesPanel.innerHTML = `
-                    <button class="choice-btn" onclick="location.reload()">Ricomincia da capo</button>
-                `;
-            } else if (option === 11) {
-                storyPanel.innerHTML = "Poso delicatamente la tazza sul tavolo e tiro un sospiro di sollievo. Meglio non rischiare rogne. Adesso vedo se trovo una via d'uscita sensata da questo cucinino. <b>(FINE - Finale Prudente)</b>";
-                choicesPanel.innerHTML = `
-                    <button class="choice-btn" onclick="location.reload()">Ricomincia da capo</button>
-                `;
-            } else if (option === 20) {
-                storyPanel.innerHTML = "Mi avvicino al muro e leggo le scritte: 'Chi beve la tazza troverà la pace... o forse no'. Brutta storia, qui c'è sotto qualcos'altro. Meglio guardarsi le spalle.";
-                choicesPanel.innerHTML = `
-                    <button class="choice-btn" onclick="makeChoice(1)">A. Torna alla tazza</button>
-                    <button class="choice-btn" onclick="makeChoice(3)">B. Cerca di sfondare la porta</button>
-                `;
-            } else {
-                storyPanel.innerHTML = "La storia continua... No me piasé affatto come va a finire. (Fine della demo del prototipo)";
-                choicesPanel.innerHTML = `
-                    <button class="choice-btn" onclick="location.reload()">Ricomincia da capo</button>
-                `;
-            }
-        }
-    </script>
-</body>
-</html>
