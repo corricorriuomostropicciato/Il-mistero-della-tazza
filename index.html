@@ -64,22 +64,51 @@ function nearObject(){const strip=$('scene').firstElementChild;let best=null,dis
 function placeHints(){let o=nearObject(),h=$('objectHint');if(!o){h.classList.remove('show');return}let x=parseFloat(o.dataset.x||o.style.left||state.x);h.textContent='E · '+(o.querySelector('.label')?.textContent||'interagisci');h.style.left=Math.max(10,Math.min($('scene').clientWidth-180,x-state.x+$('scene').clientWidth/2-70))+'px';h.classList.add('show')}
 function move(dx){
   const sc=scenes[state.scene];
-  state.x=Math.max(25,Math.min(sc.width-40,state.x+dx));
+
+  state.x=Math.max(
+    25,
+    Math.min(sc.width-40,state.x+dx)
+  );
+
   const gap=state.x-state.dogX;
-  if(Math.abs(gap)>150){state.dogState='LEAD';state.dogX+=Math.sign(gap)*5}else state.dogState='FOLLOW';
+
+  if(Math.abs(gap)>150){
+    state.dogState='LEAD';
+    state.dogX+=Math.sign(gap)*5;
+  }else{
+    state.dogState='FOLLOW';
+  }
+
   state.dogX+=(state.x-state.dogX)*0.08;
+
   updatePositions();
 }
+
 let lastTime=0;
+
 function gameLoop(time){
-  const dt=Math.min(0.033,(time-lastTime)/1000||0);
+  if(!lastTime)lastTime=time;
+
+  const dt=Math.min(
+    0.033,
+    (time-lastTime)/1000
+  );
+
   lastTime=time;
-  const speed=300;
+
   let dx=0;
-  if(keys.left)dx-=speed*dt;
-  if(keys.right)dx+=speed*dt;
-  if(dx)move(dx);
+
+  if(keys.left)dx-=300*dt;
+  if(keys.right)dx+=300*dt;
+
+  if(dx!==0){
+    move(dx);
+  }
+
   requestAnimationFrame(gameLoop);
+}
+
+requestAnimationFrame(gameLoop);
 }
 requestAnimationFrame(gameLoop);
 function interact(){if(advanceDialog())return;let o=nearObject();if(!o)return;doAction(o.dataset.action);maybeFinal()}
@@ -117,11 +146,31 @@ function maybeFinal(){if(state.scene==='casa'&&has('parents')&&has('fragment1')&
 function showEnding(){setTimeout(()=>{let facts=state.knowledge;let frag=has('fragment2');$('modalPanel').innerHTML='<h2>La tazza scomparsa</h2><div class="end">La foto sul tavolo dice: <i>13 ottobre 1988 — prima di consegnarlo.</i><br><br>“Consegnare chi?”<br><br>Il cane corre in camera. Lo segui. Sotto il letto trovi un altro frammento blu.'+(frag?'':'')+'<br><br>La verità sulla notte del 1988 era reale. Moretti, il bambino, i due genitori, il cane. Non era una leggenda.<br><br>E poi guardi il cane. Guarda te. Guarda il pavimento.<br><br>La tazza è dietro un mobile. Rotta.<br><br><b>Il colpevole era il tuo cane.</b><br><br>Ha passato tutta la notte a trascinarti in giro per il Veneto pur di evitare la sgridata.<br><br><span class="small">Cose scoperte sulla notte del 1988: '+facts+'/5</span></div><button class="btn" id="restartEnd">RICOMINCIA</button>';$('modal').classList.add('show');$('restartEnd').onclick=()=>{localStorage.removeItem(SAVE);location.reload()};},300)}
 function keydown(e){
   if(e.target.tagName==='BUTTON')return;
+
   const k=e.key.toLowerCase();
-  if(e.key==='ArrowLeft'||k==='a'){e.preventDefault();keys.left=true}
-  else if(e.key==='ArrowRight'||k==='d'){e.preventDefault();keys.right=true}
-  else if(k==='e'){e.preventDefault();interact()}
-  else if(e.key==='Enter'||e.key===' '){e.preventDefault();advanceDialog()}
+
+  if(e.key==='ArrowLeft'||k==='a'){
+    e.preventDefault();
+    keys.left=true;
+    return;
+  }
+
+  if(e.key==='ArrowRight'||k==='d'){
+    e.preventDefault();
+    keys.right=true;
+    return;
+  }
+
+  if(k==='e'){
+    e.preventDefault();
+    interact();
+    return;
+  }
+
+  if(e.key==='Enter'||e.key===' '){
+    e.preventDefault();
+    advanceDialog();
+  }
 }
 
 function keyup(e){if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a')keys.left=false;if(e.key==='ArrowRight'||e.key.toLowerCase()==='d')keys.right=false}
