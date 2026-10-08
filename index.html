@@ -62,8 +62,27 @@ function buildMirrors(s){for(let x=180;x<1450;x+=230){let m=el('mirrorPanel','le
 function updatePositions(){const sc=scenes[state.scene];const strip=$('scene').firstElementChild;const p=$('player'),d=$('dog');p.style.left=state.x+'px';d.style.left=state.dogX+'px';strip.style.transform='translateX('+Math.min(0,Math.max(-(sc.width-$('scene').clientWidth),$('scene').clientWidth/2-state.x))+'px)';placeHints()}
 function nearObject(){const strip=$('scene').firstElementChild;let best=null,dist=Infinity;strip.querySelectorAll('[data-action]').forEach(o=>{let ox=parseFloat(o.dataset.x||o.style.left||0);let d=Math.abs(state.x-ox);if(d<dist&&d<95){dist=d;best=o}});return best}
 function placeHints(){let o=nearObject(),h=$('objectHint');if(!o){h.classList.remove('show');return}let x=parseFloat(o.dataset.x||o.style.left||state.x);h.textContent='E · '+(o.querySelector('.label')?.textContent||'interagisci');h.style.left=Math.max(10,Math.min($('scene').clientWidth-180,x-state.x+$('scene').clientWidth/2-70))+'px';h.classList.add('show')}
-function move(dx){if(state.dialog)return;state.x=Math.max(25,Math.min(scenes[state.scene].width-40,state.x+dx));if(Math.abs(state.dogX-state.x)>150){state.dogState='LEAD';state.dogX+=Math.sign(state.x-state.dogX)*5}else state.dogState='FOLLOW';state.dogX+=(state.x-state.dogX)*0.08;updatePositions()}
-function interact(){if(advanceDialog())return;let o=nearObject();if(!o)return;doAction(o.dataset.action)}
+function move(dx){
+  const sc=scenes[state.scene];
+  state.x=Math.max(25,Math.min(sc.width-40,state.x+dx));
+  const gap=state.x-state.dogX;
+  if(Math.abs(gap)>150){state.dogState='LEAD';state.dogX+=Math.sign(gap)*5}else state.dogState='FOLLOW';
+  state.dogX+=(state.x-state.dogX)*0.08;
+  updatePositions();
+}
+let lastTime=0;
+function gameLoop(time){
+  const dt=Math.min(0.033,(time-lastTime)/1000||0);
+  lastTime=time;
+  const speed=300;
+  let dx=0;
+  if(keys.left)dx-=speed*dt;
+  if(keys.right)dx+=speed*dt;
+  if(dx)move(dx);
+  requestAnimationFrame(gameLoop);
+}
+requestAnimationFrame(gameLoop);
+function interact(){if(advanceDialog())return;let o=nearObject();if(!o)return;doAction(o.dataset.action);maybeFinal()}
 function travel(to,x){state.scene=to;state.x=x||180;state.dogX=state.x-75;save();buildScene();$('place').textContent=scenes[to].name;sceneIntro(to)}
 function sceneIntro(to){if(to==='casa'&&!has('intro')){set('intro');say([['Lidia?','Ma dove xé finia la me tazza?'],['','Il Golden ti guarda. Fa finta di niente.'],['','È Halloween. Fuori è già buio.']],null)}
  if(to==='parcheggio'&&!has('parkIntro')){set('parkIntro');say([['','Il vecchio parcheggio è quasi vuoto. Il cane annusa l’aria.'],['','Quella macchina... ti sembra stranamente familiare.']],null)}
@@ -96,17 +115,37 @@ function doAction(a){
 }
 function maybeFinal(){if(state.scene==='casa'&&has('parents')&&has('fragment1')&&!has('ending')){set('ending');showEnding()}}
 function showEnding(){setTimeout(()=>{let facts=state.knowledge;let frag=has('fragment2');$('modalPanel').innerHTML='<h2>La tazza scomparsa</h2><div class="end">La foto sul tavolo dice: <i>13 ottobre 1988 — prima di consegnarlo.</i><br><br>“Consegnare chi?”<br><br>Il cane corre in camera. Lo segui. Sotto il letto trovi un altro frammento blu.'+(frag?'':'')+'<br><br>La verità sulla notte del 1988 era reale. Moretti, il bambino, i due genitori, il cane. Non era una leggenda.<br><br>E poi guardi il cane. Guarda te. Guarda il pavimento.<br><br>La tazza è dietro un mobile. Rotta.<br><br><b>Il colpevole era il tuo cane.</b><br><br>Ha passato tutta la notte a trascinarti in giro per il Veneto pur di evitare la sgridata.<br><br><span class="small">Cose scoperte sulla notte del 1988: '+facts+'/5</span></div><button class="btn" id="restartEnd">RICOMINCIA</button>';$('modal').classList.add('show');$('restartEnd').onclick=()=>{localStorage.removeItem(SAVE);location.reload()};},300)}
-function keydown(e){if(e.target.tagName==='BUTTON')return;if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a'){e.preventDefault();keys.left=true;move(-18)}else if(e.key==='ArrowRight'||e.key.toLowerCase()==='d'){e.preventDefault();keys.right=true;move(18)}else if(e.key.toLowerCase()==='e'){e.preventDefault();interact()}else if(e.key==='Enter'||e.key===' '){e.preventDefault();advanceDialog()}}
+function keydown(e){
+  if(e.target.tagName==='BUTTON')return;
+  const k=e.key.toLowerCase();
+  if(e.key==='ArrowLeft'||k==='a'){e.preventDefault();keys.left=true}
+  else if(e.key==='ArrowRight'||k==='d'){e.preventDefault();keys.right=true}
+  else if(k==='e'){e.preventDefault();interact()}
+  else if(e.key==='Enter'||e.key===' '){e.preventDefault();advanceDialog()}
+}
+
 function keyup(e){if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a')keys.left=false;if(e.key==='ArrowRight'||e.key.toLowerCase()==='d')keys.right=false}
 document.addEventListener('keydown',keydown);document.addEventListener('keyup',keyup);
 $('newBtn').onclick=()=>{localStorage.removeItem(SAVE);location.reload()};
 $('continueBtn').onclick=()=>{if(load()){startGame()}};
 if(localStorage.getItem(SAVE))$('continueBtn').style.display='inline-block';
 function startGame(){$('start').style.display='none';$('world').style.display='block';buildScene();$('place').textContent=scenes[state.scene].name;renderInv();sceneIntro(state.scene)}
-for(const b of document.querySelectorAll('.mobile button')){b.addEventListener('click',()=>{let k=b.dataset.key;if(k==='left')move(-28);else if(k==='right')move(28);else interact()})}
-// prevent browser scroll / key scrolling while game is active
-window.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown',' '].includes(e.key))e.preventDefault()},{passive:false});
+let mobileTimer=null;
+function stopMobile(){if(mobileTimer){clearInterval(mobileTimer);mobileTimer=null}keys.left=false;keys.right=false}
+for(const b of document.querySelectorAll('.mobile button')){
+  const start=()=>{
+    const k=b.dataset.key;
+    if(k==='left')keys.left=true;
+    else if(k==='right')keys.right=true;
+    else interact();
+  };
+  b.addEventListener('pointerdown',e=>{e.preventDefault();start()});
+  b.addEventListener('pointerup',stopMobile);
+  b.addEventListener('pointercancel',stopMobile);
+  b.addEventListener('pointerleave',stopMobile);
+} 
+
+// Keyboard scrolling is prevented by the main key handler above.
 })();
 </script>
 </body></html>
-
